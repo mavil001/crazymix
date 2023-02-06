@@ -5,3 +5,6 @@ from django.shortcuts import render
 
 def index (request):
     return render (request,'crazymix/index.html')
+
+def infos(request):
+    return render(request,'crazymix/infos.html')

@@ -18,17 +18,33 @@
 
     <div class="collapse navbar-collapse" id="navbarsExampleDefault">
         <ul class="navbar-nav mr-auto">
+            <li>
+                <img src="{% static 'crazymix/img/logo.png' %}" style="Width:50px;">
+            </li>
             <li class="nav-item active">
                 <a class="nav-link" href="{% url 'index' %}">Accueil <span class="sr-only">(current)</span></a>
             </li>
+             <li class="nav-item active">
+                <a class="nav-link" href="{% url 'index' %}">Réservation <span class="sr-only">(current)</span></a>
+            </li>
+             <li class="nav-item active">
+                <a class="nav-link" href="{% url 'index' %}">Extraits&Artistes <span class="sr-only">(current)</span></a>
+            </li>
             <li class="nav-item">
 {#                <a class="nav-link" href="{% url 'livre_liste' %}">Livres</a>#}
+            </li>
+             <li class="nav-item active">
+                <a class="nav-link" href="{% url 'index' %}">Compte <span class="sr-only">(current)</span></a>
             </li>
         </ul>
         <form class="form-inline my-2 my-lg-0">
             <input class="form-control mr-sm-2" type="text" placeholder="Rechercher" aria-label="Search">
             <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Rechercher</button>
+
         </form>
+        <li>
+            <img src="{% static 'crazymix/img/help.jpg' %}" style="Width:50px;">
+        </li>
     </div>
 </nav>
 
