@@ -8,6 +8,7 @@
     <meta name="author" content="">
     <link rel="stylesheet" href="{% static 'crazymix/css/bootstrap.min.css' %}"/>
 
+
     <title>{% block title %}{% endblock %}</title>
 {#ici px relier aussi à mon propre style.css que j'ajouterais au dossier css#}
 </head>
@@ -24,8 +25,19 @@
             <li class="nav-item active">
                 <a class="nav-link" href="{% url 'index' %}">Accueil <span class="sr-only">(current)</span></a>
             </li>
+
              <li class="nav-item active">
-                <a class="nav-link" href="{% url 'index' %}">Réservation <span class="sr-only">(current)</span></a>
+
+ <div class="dropdown">
+          <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            Réservation
+          </button>
+          <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+            <a class="dropdown-item" href="#">Réserver une session </a>
+            <a class="dropdown-item" href="#">Voir mes sessions</a>
+            <a class="dropdown-item" href="#">Something else here</a>
+  </div>
+</div>
             </li>
              <li class="nav-item active">
                 <a class="nav-link" href="{% url 'index' %}">Extraits&Artistes <span class="sr-only">(current)</span></a>
@@ -56,6 +68,14 @@
 
         {% endblock %}
     </div>
+
+
+
+{#    <script  src="{% static 'crazymix/js/bootstrap.bundle.min.js'%}  ></script>#}
+
+{#  # Ici j'ai voulu faire le script pour le bouton reservation comme une list dropdown , en cliquant#}
+{#                 sur lui ca affiche les choix, ca marche pas encore le script de js!!!#}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.3/js/bootstrap.bundle.min.js"></script>
 
 </main><!-- /.container -->
 </body>
