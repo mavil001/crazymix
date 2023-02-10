@@ -1,10 +1,10 @@
 {% extends 'crazymix/base.html' %}
 {% load static %}
-{% block title %}{% endblock %}
+{% block title %}Crazymix-Accueil{% endblock %}
 
 {% block contenu %}
 
+<a class="btn btn-light d-table mt-5 mx-auto" href="{% url 'inscription' %}">M'inscrire</a>
 
-
-
+<a class="btn btn-light d-table mt-5 mx-auto" href="{% url 'reservation' %}">Réserver ma session au studio</a>
 {% endblock %}
