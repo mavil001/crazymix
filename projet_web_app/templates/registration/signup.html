@@ -1,0 +1,20 @@
+{% extends "../crazymix/base.html" %}
+{% block contenu %}
+    <h2 class="mb-4">Inscription</h2>
+    <ul class="messages">
+                        {% for message in messages %}
+                            <li {% if message.tags %} class="{{ message.tags }} text-danger"{% endif %}>{{ message }}</li>
+                        {% endfor %}
+                    </ul>
+    <form method="post" novalidate enctype="multipart/form-data">
+        {% csrf_token %}
+        {% for field in form.visible_fields %}
+            <div class="form-group">
+                <div class="text-danger">{{ field.errors }}</div>
+                <label class="text-dark d-block m-0" for="{{ field.id_for_label }}">{{ field.label_tag }}</label>
+                {{ field }}
+            </div>
+        {% endfor %}
+        <button class="btn btn-primary mt-3 mb-5" type="submit">S'inscrire</button>
+    </form>
+{% endblock %}

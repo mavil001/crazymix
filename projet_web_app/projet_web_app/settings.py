@@ -24,7 +24,7 @@ SECRET_KEY = 'django-insecure-is6u851l+p$6in7((wg9^32p#n%=ts#v_d9+mjfoqnh673=#(4
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost']
 
 # Application definition
 
@@ -35,9 +35,10 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'mongoengine.django.mongo_auth',
+    # 'mongoengine.django.mongo_auth',
     'crazymix'
-] + ["django_mongoengine"]
+]
+                 # + ["django_mongoengine"]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -76,7 +77,8 @@ WSGI_APPLICATION = 'projet_web_app.wsgi.application'
 mongoengine.connect(db="projet_web", host='mongodb://localhost:27017')
 
 AUTHENTICATION_BACKENDS = (
-    'mongoengine.django.auth.MongoEngineBackend',
+    # 'mongoengine.django.auth.MongoEngineBackend',
+    'django.contrib.auth.backends.ModelBackend'
 )
 # DATABASES = {
 #     'default': {
@@ -124,4 +126,5 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-AUTH_USER_MODEL = 'mongo_auth.MongoUser'
+# AUTH_USER_MODEL = 'mongo_auth.MongoUser'
+MONGOENGINE_USER_DOCUMENT = 'crazymix.User'

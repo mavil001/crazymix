@@ -1,6 +1,12 @@
 from django import forms
-# from .models import Reservation
-#
+from .models import User
+
+# class UserForm(forms.ModelForm):
+#         class Meta:
+#             model = User
+#             fields = ("username", "first_name", "last_name", "spotify" "instagram", "avatar",
+#                       "password1", "password2", "role", "description")
+
 # class ReservationForm(forms.Form):
 #
 #     ReservationChoices=[

@@ -1,4 +1,5 @@
 from django.shortcuts import render
+# from .forms import UserForm
 
 # Create your views here.
 
@@ -19,7 +20,9 @@ def connexion(request):
     return render(request,'crazymix/connexion.html', {'title':'Se connecter'})
 
 def inscription(request):
-    return render(request,'crazymix/inscription.html', {'title':"S'inscrire"})
+    # form = UserForm()
+    return render(request,'registration/signup.html', {'title':"S'inscrire", 'form' : form})
+    # return render(request,'crazymix/inscription.html', {'title':"S'inscrire", 'form' : form})
 
 def compte(request):
     return render(request,'crazymix/compte.html', {'title':'Mon compte'})
