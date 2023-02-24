@@ -1,4 +1,7 @@
-# from django.db import models
-#
-# # Create your models here.
-# class Reservation(models.Model):
+from mongoengine import *
+
+class User(Document):
+   username = StringField()
+   first_name=StringField()
+   last_name=StringField()
+
