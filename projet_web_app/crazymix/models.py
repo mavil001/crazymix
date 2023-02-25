@@ -20,9 +20,13 @@ class User(Document):
                                        _not_empty])
     first_name = StringField(max_length=40, required=True, validation=_not_empty)
     last_name = StringField(max_length=40, required=True, validation=_not_empty)
+    email=StringField(max_length=40, required=True, validation=_not_empty)
     spotify = StringField(max_length=50)
     instagram = StringField(max_length=50)
     description = StringField(max_length=200, required=True, validation=_not_empty)
     avatar = ImageField(default='logo.png')
     role = StringField(choices=ROLE)
     password = StringField(max_length=50, required=True, validation=_not_empty)
+
+# user = User(email='elwizmeziani85@gmail.com', password='projetweb@')
+# user.save()

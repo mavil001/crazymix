@@ -1,6 +1,8 @@
 from django.shortcuts import render,redirect
 # from .forms import UserForm
-from .forms import LoginForm
+from .forms import LoginForm,RegisterForm
+from .models import User
+
 
 # Create your views here.
 
@@ -42,3 +44,30 @@ def login(request):
         form = LoginForm()
 
     return render(request, 'registration/login.html', {'form': form})
+
+def register(request):
+    if(request.method=="POST"):
+        form = RegisterForm(request.POST,request.FILES)
+
+        if form.is_valid():
+            first_name=form.cleaned_data['first_name']
+            last_name=form.cleaned_data['last_name']
+            id=form.cleaned_data['id']
+            email = form.cleaned_data['email']
+            spotify = form.cleaned_data['spotify']
+            instagram = form.cleaned_data['instagram']
+            description = form.cleaned_data['description']
+            avatar = form.cleaned_data['avatar']
+            role = form.cleaned_data['role']
+            password = form.cleaned_data['passwor']
+
+            user=User(first_name=first_name,last_name=last_name,id=id,email=email,spotify=spotify,
+                                instagram=instagram,description=description,avatar=avatar,role=role,password=password,)
+
+            user.save()
+            return redirect('login')
+        return render(request, 'registration/signup.html', {'form': form})
+    else:
+        form = RegisterForm()
+
+    return render(request, 'registration/signup.html', {'form': form})

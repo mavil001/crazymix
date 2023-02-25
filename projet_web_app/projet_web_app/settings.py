@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 import mongoengine
 from pathlib import Path
 
+from mongoengine import connect, disconnect
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -37,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     # 'mongoengine.django.mongo_auth',
     'crazymix'
+
 ]
                  # + ["django_mongoengine"]
 
@@ -87,7 +89,33 @@ AUTHENTICATION_BACKENDS = (
 #     }
 # }
 
+# DATABASES={
+#     'default': {
+#         'ENGINE': 'django.db.backends.dummy',
+#     }
+# }
+disconnect()
+# MONGODB_DATABASES = {
+#     'default': {
+#         'name': 'projet_web',
+#         'host': 'localhost',
+#         'port': 27017,
+#         'username': 'marieouiza',
+#         'password': 'projetweb@',
+#         'authentication_source': 'admin',
+#         'tz_aware': True,
+#     },
+# }
+# connect(
+#     db=MONGODB_DATABASES['default']['name'],
+#     host=MONGODB_DATABASES['default']['host'],
+#     port=MONGODB_DATABASES['default']['port'],
+#     username=MONGODB_DATABASES['default']['username'],
+#     password=MONGODB_DATABASES['default']['password'],
+#     authentication_source=MONGODB_DATABASES['default']['authentication_source']
+# )
 
+# MongoClient=('mongodb://marieouiza:projetweb@@localhost:27017/projet_web')
 # Password validation
 # https://docs.djangoproject.com/en/4.1/ref/settings/#auth-password-validators
 
