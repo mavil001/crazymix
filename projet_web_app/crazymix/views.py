@@ -1,5 +1,6 @@
-from django.shortcuts import render
+from django.shortcuts import render,redirect
 # from .forms import UserForm
+from .forms import LoginForm
 
 # Create your views here.
 
@@ -29,3 +30,15 @@ def compte(request):
 
 def infos(request):
     return render(request,'crazymix/infos.html', {'title':'Informations sur le site du studio'})
+
+
+def login(request):
+    if (request.method == "POST"):
+        form = LoginForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('login')
+    else:
+        form = LoginForm()
+
+    return render(request, 'registration/login.html', {'form': form})
