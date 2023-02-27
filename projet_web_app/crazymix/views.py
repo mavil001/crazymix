@@ -1,13 +1,14 @@
 from django.shortcuts import render
 # from .forms import UserForm
-
 # Create your views here.
 
 
 def index (request):
+
     return render(request,'crazymix/index.html', {'title':'CrazyMix - Studio'})
 
 def reservation(request):
+
     return render(request,'crazymix/reservation.html', {'title':"Réserver une session d'enregistrement"})
 
 def sessions(request):
@@ -21,8 +22,8 @@ def connexion(request):
 
 def inscription(request):
     # form = UserForm()
-    return render(request,'registration/signup.html', {'title':"S'inscrire", 'form' : form})
-    # return render(request,'crazymix/inscription.html', {'title':"S'inscrire", 'form' : form})
+    # return render(request,'registration/signup.html', {'title':"S'inscrire", 'form' : form})
+    return render(request,'crazymix/inscription.html', {'title':"S'inscrire"})
 
 def compte(request):
     return render(request,'crazymix/compte.html', {'title':'Mon compte'})
