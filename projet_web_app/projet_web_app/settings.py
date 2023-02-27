@@ -9,6 +9,7 @@ https://docs.djangoproject.com/en/4.1/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.1/ref/settings/
 """
+
 import mongoengine
 from pathlib import Path
 
@@ -36,7 +37,9 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    # 'mongoengine.django.mongo_auth',
+    'django_mongoengine',
+    'django_mongoengine.mongo_auth',
+    'django_mongoengine.mongo_admin',
     'crazymix'
 
 ]
@@ -80,8 +83,13 @@ mongoengine.connect(db="projet_web", host='mongodb://localhost:27017')
 
 AUTHENTICATION_BACKENDS = (
     # 'mongoengine.django.auth.MongoEngineBackend',
-    'django.contrib.auth.backends.ModelBackend'
+    'django.contrib.auth.backends.ModelBackend',
+    # 'django_mongoengine.mongo_auth.backends.MongoEngineBackend'
 )
+# SESSION_ENGINE='django_mongoengine.sessions'
+# SESSION_SERIALIZER='django_mongoengine.sessions.BSONSerializer'
+# AUTH_USER_MODEL='crazymix.User'
+# MONGOENGINE_USER_DOCUMENT='django_mongoengine.mongo_auth.models.User'
 # DATABASES = {
 #     'default': {
 #         'ENGINE': 'django.db.backends.sqlite3',
@@ -95,17 +103,14 @@ AUTHENTICATION_BACKENDS = (
 #     }
 # }
 disconnect()
-# MONGODB_DATABASES = {
-#     'default': {
-#         'name': 'projet_web',
-#         'host': 'localhost',
-#         'port': 27017,
-#         'username': 'marieouiza',
-#         'password': 'projetweb@',
-#         'authentication_source': 'admin',
-#         'tz_aware': True,
-#     },
-# }
+MONGODB_DATABASES = {
+    'default': {
+        'name': 'projet_web',
+        'host': 'localhost',
+        'port': 27017,
+        'tz_aware': True,
+    }
+}
 # connect(
 #     db=MONGODB_DATABASES['default']['name'],
 #     host=MONGODB_DATABASES['default']['host'],
@@ -155,6 +160,11 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # AUTH_USER_MODEL = 'mongo_auth.MongoUser'
-MONGOENGINE_USER_DOCUMENT = 'crazymix.User'
+# MONGOENGINE_USER_DOCUMENT = 'crazymix.User'
 LOGIN_REDIRECT_URL= '/crazymix'
 
+# AUTHENTICATION_BACKENDS = (
+# 'mongoengine.django.auth.MongoEngineBackend',
+# )
+#
+# SESSION_ENGINE = 'mongoengine.django.sessions'

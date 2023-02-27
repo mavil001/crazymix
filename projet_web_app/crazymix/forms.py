@@ -1,6 +1,7 @@
 from django import forms
-from .models import User
+#from .models import User
 from django.contrib.auth.forms import AuthenticationForm,UserCreationForm
+
 
 # class UserForm(forms.ModelForm):
 #         class Meta:
@@ -17,8 +18,8 @@ from django.contrib.auth.forms import AuthenticationForm,UserCreationForm
 #     Reservation=forms.CharField(label='Reservation',widget=forms.Select(choices=ReservationChoices))
 
 
-class LoginForm(AuthenticationForm):
-    username = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control  col-4 text-white'}))
+class LoginForm(forms.Form):
+    username = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control  col-4 '}))
     password = forms.CharField(widget=forms.PasswordInput(attrs={'class': 'form-control  col-4 '}))
 
 class RegisterForm(UserCreationForm):

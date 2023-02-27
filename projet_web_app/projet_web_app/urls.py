@@ -16,12 +16,15 @@ Including another URLconf
 from django.contrib import admin
 from django.conf import settings
 from django.urls import path, include
+from django_mongoengine import mongo_admin
 
 from crazymix import views
 
+
 urlpatterns = [
-    path('admin/', admin.site.urls),
+    path('admin/', mongo_admin.site.urls),
     path('crazymix/', include('crazymix.urls')),
+    path('accounts/login/', views.login),
     path('accounts/', include('django.contrib.auth.urls')),
-    path('accounts/signup/', views.register, name='register'),
+    path('accounts/signup/',  views.register, name='register'),
 ]

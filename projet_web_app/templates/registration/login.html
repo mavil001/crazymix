@@ -1,10 +1,15 @@
 {% extends 'crazymix/base.html' %}
 {% block contenu %}
+ {% for error in form.errors %}
+
+        <li>{{ error }}</li>
+    {% endfor %}
 <form method="post">
   {% csrf_token %}
   {{ form.as_p }}
   <button class="btn btn-primary" type="submit">
     Soumettre
   </button>
+{{ user.username }}
 </form>
 {% endblock %}
