@@ -55,8 +55,8 @@ def login(request):
             # user = authenticate(request, username=username, password=password)
             # si la liste n'est pas vide donc il a trouvé un user avec le username et le pwd'
             if user is None:
-                # return redirect('login')
-                return render(request, 'registration/login.html', {'form': form})
+                return redirect('login')
+                # return render(request, 'registration/login.html', {'form': form})
             else:
                 if check_password(password, user.password):
                     return redirect('compte')
