@@ -1,3 +1,4 @@
+from django.core.files.storage import FileSystemStorage
 from django.shortcuts import render,redirect
 from crazymix.models import User
 
@@ -72,21 +73,22 @@ def register(request):
         form = RegisterForm(request.POST,request.FILES)
 
         if form.is_valid():
+            username=form.cleaned_data['username']
             first_name=form.cleaned_data['first_name']
             last_name=form.cleaned_data['last_name']
-            id=form.cleaned_data['id']
             email = form.cleaned_data['email']
             spotify = form.cleaned_data['spotify']
             instagram = form.cleaned_data['instagram']
             description = form.cleaned_data['description']
             avatar = form.cleaned_data['avatar']
             role = form.cleaned_data['role']
-            password = form.cleaned_data['passwor']
+            password = form.cleaned_data['password']
+            pwd=password
+            hashed_password = make_password(pwd)
+            user=User(username=username,first_name=first_name,last_name=last_name,email=email,spotify=spotify,
+                            instagram=instagram,description=description,avatar=avatar,role=role,password=hashed_password,)
 
-            #user=User(first_name=first_name,last_name=last_name,id=id,email=email,spotify=spotify,
-            #                 instagram=instagram,description=description,avatar=avatar,role=role,password=password,)
-
-            #user.save()
+            user.save()
             return redirect('login')
         return render(request, 'registration/signup.html', {'form': form})
     else:
@@ -101,3 +103,14 @@ def sessionUser(request):
         user = User.objects.get(pk=user_id)
     else:
         return redirect ('login')
+
+
+
+def upload(request):
+    if request.method=="POST" and request.FILES["upload"]:
+        upload = request.FILES["upload"]
+        fss = FileSystemStorage()
+        file = fss.save(upload.name, upload)
+        file_url = fss.url(file)
+        return render(request,'crazymix/upload.html',{'file_url':file_url})
+    return render(request,'crazymix/upload.html')

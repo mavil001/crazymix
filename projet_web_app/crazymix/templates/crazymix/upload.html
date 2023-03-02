@@ -1,0 +1,23 @@
+{% extends 'crazymix/base.html' %}
+{% load static %}
+{% block title %}{% endblock %}
+
+{% block contenu %}
+
+<form action="" method="POST" enctype="multipart/form-data">
+    {% csrf_token %}
+        <input type="file" name="upload">
+        <input type="submit" value="soumettre">
+</form>
+    <div>
+         <h2>Image</h2>
+    {% if file_url %}
+        <img src="{{ file_url }}">
+    {% else %}
+        <p>Aucun fichier</p>
+    {% endif %}
+    </div>
+
+
+
+{% endblock %}
