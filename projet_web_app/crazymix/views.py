@@ -3,7 +3,7 @@ from django_mongoengine.mongo_auth.managers import UserManager
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth.hashers import check_password
-from .forms import LoginForm, RegisterForm, ReservationForm
+from .forms import LoginForm, RegisterForm
 import calendar
 from datetime import date
 from datetime import datetime
@@ -18,7 +18,7 @@ def index(request):
     return render(request, 'crazymix/index.html', {'title': 'CrazyMix - Studio'})
 
 def reservation(request):
-    form = ReservationForm()
+    form = ''
     # Date aujourd'hui
     dateNow = datetime.now()
     today = dateNow.day
