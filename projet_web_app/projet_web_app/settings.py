@@ -9,6 +9,8 @@ https://docs.djangoproject.com/en/4.1/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.1/ref/settings/
 """
+import os
+
 import mongoengine
 from pathlib import Path
 
@@ -37,6 +39,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     # 'mongoengine.django.mongo_auth',
+    'schedule',
+    'djangobower',
     'crazymix'
 
 ]
@@ -94,7 +98,7 @@ AUTHENTICATION_BACKENDS = (
 #         'ENGINE': 'django.db.backends.dummy',
 #     }
 # }
-disconnect()
+# disconnect()
 # MONGODB_DATABASES = {
 #     'default': {
 #         'name': 'projet_web',
@@ -148,13 +152,14 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
 
+
 STATIC_URL = 'static/'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-# AUTH_USER_MODEL = 'mongo_auth.MongoUser'
 MONGOENGINE_USER_DOCUMENT = 'crazymix.User'
 LOGIN_REDIRECT_URL= '/crazymix'
+# MONGODBFORMS_FIELDGENERATOR = 'myproject.fieldgenerator.GeneratorClass'
 

@@ -1,3 +1,4 @@
+import mongoengine
 from django.core.validators import RegexValidator
 from mongoengine import *
 # from mongoengine.django import AbstractBaseUser
@@ -30,3 +31,9 @@ class User(Document):
 
 # user = User(email='elwizmeziani85@gmail.com', password='projetweb@')
 # user.save()
+
+class Reservation(Document):
+    id = StringField(required=True, unique=True)
+    datetime_fin = DateTimeField(required=True)
+    datetime_debut = DateTimeField(required=True)
+    user = ReferenceField(User, reverse_delete_rule=mongoengine.CASCADE)
