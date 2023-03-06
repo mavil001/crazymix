@@ -95,7 +95,14 @@ def login(request):
         form = LoginForm()
     context={'user':request.session.get('user',None)}
     return render(request, 'registration/login.html', {'form': form,'context':context})
-
+def upload(request):
+    if request.method=="POST" and request.FILES["upload"]:
+        upload = request.FILES["upload"]
+        fss = FileSystemStorage()
+        file = fss.save(upload.name, upload)
+        file_url = fss.url(file)
+        return render(request,'crazymix/upload.html',{'file_url':file_url})
+    return render(request,'crazymix/upload.html')
 def register(request):
     if(request.method=="POST"):
         form = RegisterForm(request.POST,request.FILES)
@@ -132,12 +139,5 @@ def register(request):
 #     else:
 #         return redirect ('login')
 
-def upload(request):
-    if request.method=="POST" and request.FILES["upload"]:
-        upload = request.FILES["upload"]
-        fss = FileSystemStorage()
-        file = fss.save(upload.name, upload)
-        file_url = fss.url(file)
-        return render(request,'crazymix/upload.html',{'file_url':file_url})
-    return render(request,'crazymix/upload.html')
+
 
