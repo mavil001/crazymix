@@ -86,8 +86,8 @@ AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',
     # 'django_mongoengine.mongo_auth.backends.MongoEngineBackend'
 )
-# SESSION_ENGINE='django_mongoengine.sessions'
-# SESSION_SERIALIZER='django_mongoengine.sessions.BSONSerializer'
+SESSION_ENGINE='django_mongoengine.sessions'
+SESSION_SERIALIZER='django_mongoengine.sessions.BSONSerializer'
 # AUTH_USER_MODEL='crazymix.User'
 # MONGOENGINE_USER_DOCUMENT='django_mongoengine.mongo_auth.models.User'
 # DATABASES = {
@@ -105,7 +105,7 @@ AUTHENTICATION_BACKENDS = (
 disconnect()
 MONGODB_DATABASES = {
     'default': {
-        # 'ENGINE': 'django_mongoengine',
+        'ENGINE': 'django_mongoengine',
         'name': 'projet_web',
         'host': 'localhost',
         'port': 27017,
@@ -143,7 +143,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/4.1/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'fr-ca'
 
 TIME_ZONE = 'UTC'
 

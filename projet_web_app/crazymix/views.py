@@ -43,8 +43,10 @@ def reservation(request):
     index_jour = 0
     index_semaine = 0
     while not semaine_trouvee and index_semaine < len(monthDates):
+        index_jour = 0
         while not jour_trouve and index_jour < len(monthDates[index_semaine]):
             # 0=date 1=jour_semaine
+
             if today == monthDates[index_semaine][index_jour][0]:
                 jour_trouve = True
             else:
