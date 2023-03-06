@@ -120,7 +120,8 @@ def reservation(request):
                                                          'form': form, 'jours_semaine': joursSemaine,
                                                          'datesSemaine': datesSemaine,
                                                          'moisSemaine': moisSemaine, 'today': dateNow.day,
-                                                         "heureActuelle": dateNow.hour, 'heures':heures})    return render(request,'crazymix/reservation.html', {'title':"Réserver une session d'enregistrement"})
+                                                         "heureActuelle": dateNow.hour, 'heures':heures})
+    # return render(request,'crazymix/reservation.html', {'title':"Réserver une session d'enregistrement"})
 
 def sessions(request):
     return render(request,'crazymix/sessions.html', {'title':"Mes sessions d'enregistrement"})

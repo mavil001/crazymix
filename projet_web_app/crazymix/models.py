@@ -1,3 +1,4 @@
+import mongoengine
 from django.core.validators import RegexValidator
 from mongoengine import *
 import crazymix
@@ -32,7 +33,11 @@ class Utilisateur(Document):
                                                       'au moins 8 caractères sans espace'),
                                        _not_empty])
 
-
+class Reservation(Document):
+    id = StringField(required=True, unique=True)
+    datetime_fin = DateTimeField(required=True)
+    datetime_debut = DateTimeField(required=True)
+    user = ReferenceField(Utilisateur, reverse_delete_rule=mongoengine.CASCADE)
     # def __string__(self):
     #         return '%s' % (Utilisateur.username,)
 class MyUser(AbstractUser):
