@@ -3,31 +3,57 @@
 {% block title %}Crazymix-Réservation{% endblock %}
 
 {% block contenu %}
+    <h4 class="text-center mt-3">{{ moisSemaine }}</h4>
+    <form>
+        <table class="table table-dark">
+            <thead>
+            <tr>
+                {% for jour in datesSemaine %}
+                    <th class="text-center" style="{{ jour.style }}" scope="col">{{ jour.jour }}<br>{{ jour.date }}</th>
+                {% endfor %}
+            </tr>
+            </thead>
+            <tbody>
+            {% for heure in heures %}
+                <tr>
+                    {% for jour in datesSemaine %}
+                        <td class="text-center align-middle">
+                            {% if jour.classe is None %}
+                                {% if jour.date == today %}
+                                    {% if heure.classe is None %}
+                                        <a class="text-white btn btn-dark" href="http://example.com">
+                                            <div style="height:100%;width:100%">
+                                                {{ heure.hDebut }}:00 - {{ heure.hFin }}:00
+                                            </div>
+                                        </a>
+                                    {% else %}
+                                        <div style="height:100%;width:100%" class="{{ heure.classe }}">
+                                            {{ heure.hDebut }}:00 - {{ heure.hFin }}:00
+                                        </div>
+                                    {% endif %}
+                                {% else %}
+                                    <a class="text-white btn btn-dark" href="http://example.com">
+                                        <div style="height:100%;width:100%" classe="{{ heure.classe }}">
+                                            {{ heure.hDebut }}:00 - {{ heure.hFin }}:00
+                                        </div>
+                                    </a>
+                                {% endif %}
 
-{#    {% block head_title %}{% trans "Fullcalendar" %}{% endblock %}#}
-
-    {% block tab_id %}id="home_tab"{% endblock %}
-
-    {% block extra_head %}
-        <link rel='stylesheet' type='text/css' href="../../staticfiles/fullcalendar/dist/fullcalendar.css"/>
-        <script type='text/javascript' src="../../../staticfiles/moment/moment.js"></script>
-        <script type='text/javascript' src="../../../staticfiles/fullcalendar/dist/fullcalendar.js"></script>
-    {% endblock %}
-
-    {% block body %}
-        <div id="calendar"></div>
-        <script type='text/javascript'>
-            $(document).ready(function () {
-
-                // page is now ready, initialize the calendar...
-                $('#calendar').fullCalendar({
-                    // put your options and callbacks here
-                    events: '/schedule/api/occurrences?calendar_slug=example'
-                })
-
-            });
-        </script>
-
-    {% endblock %}
+                            {% else %}
+                                <div class="{{ jour.classe }}" style="height:100%;width:100%{{ jour.style }}">
+                                    {{ heure.hDebut }}:00 - {{ heure.hFin }}:00
+                                </div>
+                            {% endif %}
+                        </td>
+                    {% endfor %}
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+        <div class="d-flex justify-content-end">
+            <p name="reservation"></p>
+            <button class="btn btn-secondary ml-2 btn-lg mb-5" type="submit">Réserver <span class="badge badge-light">5 février 10:00-11:00</span></button>
+        </div>
+    </form>
 
 {% endblock %}
