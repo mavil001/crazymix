@@ -1,7 +1,7 @@
 from django.core.validators import RegexValidator
 from mongoengine import *
 import crazymix
-# from mongoengine.django import AbstractBaseUser
+from django.contrib.auth.models import AbstractUser
 
 ROLE = (('PROFESSIONNEL', 'Professionnel'),
         ('ARTISTE', 'Artiste'))
@@ -12,7 +12,7 @@ def _not_empty(val):
         raise ValidationError('Champs requis')
 
 
-class User(Document):
+class Utilisateur(Document):
     # id = StringField(required=True, unique=True)
     username = StringField(max_length=20, validation=_not_empty)
                            # validators=[RegexValidator("[A-Za-z0-9@#$%^&+=]{8,}",
@@ -32,5 +32,9 @@ class User(Document):
                                                       'au moins 8 caractères sans espace'),
                                        _not_empty])
 
-# user = User(email='elwizmeziani85@gmail.com', password='projetweb@')
-# user.save()
+
+    # def __string__(self):
+    #         return '%s' % (Utilisateur.username,)
+class MyUser(AbstractUser):
+    def __str__(self):
+        return self.username

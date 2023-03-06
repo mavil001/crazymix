@@ -1,13 +1,13 @@
 from django.core.files.storage import FileSystemStorage
+from django.http import HttpResponse
 from django.shortcuts import render,redirect
-from crazymix.models import User
+from mongoengine import DoesNotExist,ValidationError
+
+from crazymix.models import Utilisateur
 
 # from .forms import UserForm
 from .forms import LoginForm,RegisterForm
-#from forms import LoginForm
-#from .models import User
-from django_mongoengine.mongo_auth.managers import UserManager
-from django.contrib.auth import authenticate, login
+
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth.hashers import check_password
 
@@ -28,14 +28,37 @@ def extraits_artistes(request):
 
 def connexion(request):
     return render(request,'crazymix/connexion.html', {'title':'Se connecter'})
-
+def deconnexion(request):
+    request.session.clear()
+    return redirect('index')
 def inscription(request):
     #form = UserForm()
     return render(request,'registration/signup.html', {'title':"S'inscrire"})
     # return render(request,'crazymix/inscription.html', {'title':"S'inscrire", 'form' : form})
 
 def compte(request):
-    return render(request,'crazymix/compte.html', {'title':'Mon compte'})
+    # def authenticate(self, username=None, password=None, **kwargs):
+    #     try:
+            ab=request.session.get('is_authenticated')
+
+
+
+            if 'is_authenticated' in request.session and request.session['is_authenticated']:
+
+
+                utilisateur_id = request.session['utilisateur_id']
+                utilisateur = Utilisateur.objects.get(id=utilisateur_id)
+
+
+        # except (DoesNotExist, ValidationError):
+
+            # request.session['is_autenticated']= True
+            #  utilisateur_id = request.session['utilisateur_id']
+            #  utilisateur = Utilisateur.objects.get(id=utilisateur_id);
+
+                return render(request,'crazymix/compte.html', {'title':'Mon compte', 'utilisateur':utilisateur})
+            else:
+                return HttpResponse('Veuillez vous connecter')
 
 def infos(request):
     return render(request,'crazymix/infos.html', {'title':'Informations sur le site du studio'})
@@ -51,22 +74,27 @@ def login(request):
             # pwd=password
             # hashed_password = make_password(pwd)
             # if check_password('password', hashed_password):
-            user=User.objects.filter(username=username).first()
+            utilisateur=Utilisateur.objects.filter(username=username).first()
 
             # user = authenticate(request, username=username, password=password)
             # si la liste n'est pas vide donc il a trouvé un user avec le username et le pwd'
-            if user is None:
+            if utilisateur is None:
+
                 return redirect('login')
                 # return render(request, 'registration/login.html', {'form': form})
             else:
-                if check_password(password, user.password):
+                if check_password(password, utilisateur.password):
+
+                    request.session['utilisateur_id'] = utilisateur.id
+                    request.session['is_authenticated'] = True
+
                     return redirect('compte')
     else:
         # user=User(username='admin',password= make_password('12345qwe!'))
         # user.save()
         form = LoginForm()
-
-    return render(request, 'registration/login.html', {'form': form})
+    context={'user':request.session.get('user',None)}
+    return render(request, 'registration/login.html', {'form': form,'context':context})
 
 def register(request):
     if(request.method=="POST"):
@@ -85,10 +113,10 @@ def register(request):
             password = form.cleaned_data['password']
             pwd=password
             hashed_password = make_password(pwd)
-            user=User(username=username,first_name=first_name,last_name=last_name,email=email,spotify=spotify,
-                            instagram=instagram,description=description,avatar=avatar,role=role,password=hashed_password,)
+            utilisateur=Utilisateur(username=username,first_name=first_name,last_name=last_name,email=email,spotify=spotify,instagram=instagram,
+                                    description=description,avatar=avatar,role=role,password=hashed_password)
 
-            user.save()
+            utilisateur.save()
             return redirect('login')
         return render(request, 'registration/signup.html', {'form': form})
     else:
@@ -97,12 +125,12 @@ def register(request):
     return render(request, 'registration/signup.html', {'form': form})
 
 
-def sessionUser(request):
-    user_id=request.session.get('user_id')
-    if user_id is not None:
-        user = User.objects.get(pk=user_id)
-    else:
-        return redirect ('login')
+# def sessionUser(request):
+#     user_id=request.session.get('user_id')
+#     if user_id is not None:
+#         user = User.objects.get(pk=user_id)
+#     else:
+#         return redirect ('login')
 
 
 

@@ -7,6 +7,7 @@ urlpatterns = [
     path('sessions/', views.sessions, name="sessions"),
     path('extraits_artistes/', views.extraits_artistes, name="extraits_artistes"),
     path('connexion/', views.connexion, name="connexion"),
+    path('deconnexion/', views.deconnexion, name="deconnexion"),
     path('inscription/new', views.inscription, name="inscription"),
     path('compte/', views.compte, name="compte"),
     path('infos/', views.infos, name="infos"),
