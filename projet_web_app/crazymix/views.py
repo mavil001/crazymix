@@ -132,8 +132,6 @@ def register(request):
 #     else:
 #         return redirect ('login')
 
-
-
 def upload(request):
     if request.method=="POST" and request.FILES["upload"]:
         upload = request.FILES["upload"]
@@ -142,3 +140,4 @@ def upload(request):
         file_url = fss.url(file)
         return render(request,'crazymix/upload.html',{'file_url':file_url})
     return render(request,'crazymix/upload.html')
+
