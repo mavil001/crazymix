@@ -1,3 +1,4 @@
+from django.contrib import messages
 from django.core.files.storage import FileSystemStorage
 from django.shortcuts import render,redirect
 from django.http import HttpResponse
@@ -5,6 +6,7 @@ from crazymix.models import Utilisateur
 # from .forms import UserForm
 from .forms import LoginForm,RegisterForm
 import datetime
+import base64
 # from django_mongoengine.mongo_auth.managers import UserManager
 import calendar
 from datetime import date
@@ -144,13 +146,15 @@ def compte(request):
     #     try:
             ab=request.session.get('is_authenticated')
 
-
-
             if 'is_authenticated' in request.session and request.session['is_authenticated']:
 
 
                 utilisateur_id = request.session['utilisateur_id']
                 utilisateur = Utilisateur.objects.get(id=utilisateur_id)
+                image_proxy=utilisateur.avatar
+                image_bytes = image_proxy.read()
+                image_data = base64.b64encode(image_bytes).decode('utf-8')
+                image_src = f"data:image/jpeg;base64,{image_data}"
 
 
         # except (DoesNotExist, ValidationError):
@@ -159,7 +163,7 @@ def compte(request):
             #  utilisateur_id = request.session['utilisateur_id']
             #  utilisateur = Utilisateur.objects.get(id=utilisateur_id);
 
-                return render(request,'crazymix/compte.html', {'title':'Mon compte', 'utilisateur':utilisateur})
+                return render(request,'crazymix/compte.html', {'title':'Mon compte', 'utilisateur':utilisateur,'image_src':image_src})
             else:
                 return HttpResponse('Veuillez vous connecter')
 
@@ -187,6 +191,7 @@ def login(request):
                 return redirect('login')
                 # return render(request, 'registration/login.html', {'form': form})
             else:
+
                 if check_password(password, utilisateur.password):
 
                     request.session['utilisateur_id'] = utilisateur.id
@@ -219,9 +224,12 @@ def register(request):
             hashed_password = make_password(pwd)
             utilisateur=Utilisateur(username=username,first_name=first_name,last_name=last_name,email=email,spotify=spotify,instagram=instagram,
                                     description=description,avatar=avatar,role=role,password=hashed_password)
-
-            utilisateur.save()
-            return redirect('login')
+            util=Utilisateur.objects.filter(username=username)
+            if len(util) ==0 :
+                utilisateur.save()
+                return redirect('login')
+            else:
+                messages.add_message(request, messages.INFO, "Ce nom d'utilisateur existe déja, Veuillez utiliser un autre")
         return render(request, 'registration/signup.html', {'form': form})
     else:
         form = RegisterForm()

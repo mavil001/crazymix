@@ -17,6 +17,7 @@ Including another URLconf
 from django.conf import settings
 from django.urls import path, include
 from django_mongoengine import mongo_admin
+from django.conf.urls.static import static
 
 from crazymix import views
 
@@ -27,4 +28,5 @@ urlpatterns = [
     path('accounts/login/', views.login),
     path('accounts/', include('django.contrib.auth.urls')),
     path('accounts/signup/',  views.register, name='register'),
-]
+    path("upload/", views.upload, name="upload")
+] +static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

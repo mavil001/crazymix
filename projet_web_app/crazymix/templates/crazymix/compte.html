@@ -3,12 +3,18 @@
 {% block title %}Crazymix-Mon compte{% endblock %}
 
 {% block contenu %}
-
+     <p> <img src="{{ image_src }}" style="width:150px;"></p>
     <p>{{ utilisateur.username }}</p>
     <p>{{ utilisateur.first_name }}</p>
     <p>{{ utilisateur.last_name }}</p>
     <p>{{ utilisateur.email }}</p>
-     <p> <img src="{% static 'crazymix/img/monAvatar.jpg' %}" style="width: 70px;"></p>
+    <p>{{ utilisateur.adresse }}</p>
+    <p>{{ utilisateur.codePostal }}</p>
+    <p>{{ utilisateur.telephone }}</p>
+    <p>{{ utilisateur.instagram }}</p>
+    <p>{{ utilisateur.spotify }}</p>
+    <p>{{ utilisateur.role }}</p>
+
 
 
 
