@@ -13,4 +13,5 @@ urlpatterns = [
     path('inscription/new', views.inscription, name="inscription"),
     path('compte/', views.compte, name="compte"),
     path('infos/', views.infos, name="infos"),
+    path("upload/", views.upload, name="upload")
 ]

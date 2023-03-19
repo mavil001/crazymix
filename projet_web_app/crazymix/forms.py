@@ -25,11 +25,11 @@ class LoginForm(forms.Form):
     password = forms.CharField(widget=forms.PasswordInput(attrs={'class': 'form-control  col-4 '}))
 
 class RegisterForm(forms.Form):
-        username= forms.CharField( label='username',
+        username= forms.CharField( label="Nom d'utilisateur",
                                     widget=forms.TextInput(attrs={'class': 'form-control col-4'}))
-        password= forms.CharField(required=True, label='password',
+        password= forms.CharField(required=True, label='Mot de passe',
                                     widget=forms.PasswordInput(attrs={'class': 'form-control col-4'}))
-        password1=forms.CharField(required=True, label='confirmation password',
+        password1=forms.CharField(required=True, label='confirmation mot de passe',
                                     widget=forms.PasswordInput(attrs={'class': 'form-control col-4'}))
         email = forms.EmailField(required=True, label='Adresse éléctronique', widget=forms.EmailInput(
             attrs={'class': 'form-control col-4', 'placeholder': 'user@gmail.com'}))
@@ -45,11 +45,11 @@ class RegisterForm(forms.Form):
                                     widget=forms.TextInput(attrs={'class': 'form-control col-4'}))
         avatar = forms.ImageField(label='Avatar',
                                   widget=forms.ClearableFileInput(attrs={'class': 'form-control col-4'}))
-        spotify= forms.CharField(required=True, label='spotify',
-                                     widget=forms.TextInput(attrs={'class': 'form-control col-4'}))
-        instagram = forms.CharField(required=True, label='instagram',
-                                  widget=forms.TextInput(attrs={'class': 'form-control col-4'}))
-        description = forms.CharField(required=True, label='description',
+        spotify= forms.CharField(required=False,label='Spotify',
+                                     widget=forms.TextInput(attrs={'class': 'form-control col-4', 'placeholder':'facultatif'}))
+        instagram = forms.CharField( required=False,label='Instagram',
+                                  widget=forms.TextInput(attrs={'class': 'form-control col-4','placeholder':'facultatif'}))
+        description = forms.CharField(required=True, label='Description',
                                   widget=forms.Textarea(attrs={'class': 'form-control col-4'}))
         role= forms.ChoiceField(required=True,choices=ROLE, widget=forms.Select)
 
