@@ -6,7 +6,9 @@ from django.contrib.auth.models import AbstractUser
 
 ROLE = (('PROFESSIONNEL', 'Professionnel'),
         ('ARTISTE', 'Artiste'))
-
+STATUT=(('EN_ATTENTE', 'En attente'),
+        ('VALIDE', 'Validé'),
+        ('COMPLETE', 'Complété'))
 
 def _not_empty(val):
     if not val:
@@ -33,13 +35,23 @@ class Utilisateur(Document):
                                                       'au moins 8 caractères sans espace'),
                                        _not_empty])
 
+
 class Reservation(Document):
-    id = StringField(required=True, unique=True)
-    datetime_fin = DateTimeField(required=True)
-    datetime_debut = DateTimeField(required=True)
-    user = ReferenceField(Utilisateur, reverse_delete_rule=mongoengine.CASCADE)
-    # def __string__(self):
-    #         return '%s' % (Utilisateur.username,)
+    pass
+
+
+class Enregistrement(Document):
+    path=StringField(required=True)
+    reservation=ReferenceField(Reservation, reverse_delete_rule=mongoengine.CASCADE, required=True)
+    
+class Reservation(Document):
+    fin = DateTimeField(required=True)
+    debut = DateTimeField(required=True)
+    user = ReferenceField(Utilisateur, reverse_delete_rule=mongoengine.CASCADE, required=True)
+    statut=StringField(choices=STATUT, required=True)
+    enregistrement = ReferenceField(Enregistrement, reverse_delete_rule=mongoengine.CASCADE)
+
+
 class MyUser(AbstractUser):
     def __str__(self):
         return self.username

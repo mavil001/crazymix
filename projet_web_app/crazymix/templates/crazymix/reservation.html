@@ -4,56 +4,76 @@
 
 {% block contenu %}
     <h4 class="text-center mt-3">{{ moisSemaine }}</h4>
-    <form>
-        <table class="table table-dark">
-            <thead>
-            <tr>
-                {% for jour in datesSemaine %}
-                    <th class="text-center" style="{{ jour.style }}" scope="col">{{ jour.jour }}<br>{{ jour.date }}</th>
-                {% endfor %}
-            </tr>
-            </thead>
-            <tbody>
-            {% for heure in heures %}
+
+    <div class="d-flex align-items-center justify-content-center">
+        <a href="" id="previous" onclick="getOtherWeek(this)"><img class="mr-3"
+                                                                   src="{% static 'crazymix/img/arrow_left.png' %}"
+                                                                   style="Width:35px;"/></a>
+
+        <div>
+
+            <table class="table table-dark">
+                <thead>
                 <tr>
                     {% for jour in datesSemaine %}
-                        <td class="text-center align-middle">
-                            {% if jour.classe is None %}
-                                {% if jour.date == today %}
-                                    {% if heure.classe is None %}
-                                        <a class="text-white btn btn-dark" href="http://example.com">
-                                            <div style="height:100%;width:100%">
+                        <th class="text-center" style="{{ jour.style }}"
+                            scope="col">{{ jour.jour }}<br>{{ jour.date }}
+                        </th>
+                    {% endfor %}
+                </tr>
+                </thead>
+                <tbody>
+                {% for heure in heures %}
+                    <tr>
+                        {% for jour in datesSemaine %}
+                            <td class="text-center align-middle">
+                                {% if jour.classe is None %}
+                                    {% if jour.date == today %}
+                                        {% if heure.classe is None %}
+                                            <a class="text-white btn btn-dark" onClick="selectSchedule(this)">
+                                                <div style="height:100%;width:100%" name="{{ jour.dateComplete }}">
+                                                    {{ heure.hDebut }}:00 - {{ heure.hFin }}:00
+                                                </div>
+                                            </a>
+                                        {% else %}
+                                            <div style="height:100%;width:100%" class="{{ heure.classe }}">
+                                                {{ heure.hDebut }}:00 - {{ heure.hFin }}:00
+                                            </div>
+                                        {% endif %}
+                                    {% else %}
+                                        <a class="text-white btn btn-dark" onClick="selectSchedule(this)">
+                                            <div style="height:100%;width:100%" name="{{ jour.dateComplete }}"
+                                                 classe="{{ heure.classe }}">
                                                 {{ heure.hDebut }}:00 - {{ heure.hFin }}:00
                                             </div>
                                         </a>
-                                    {% else %}
-                                        <div style="height:100%;width:100%" class="{{ heure.classe }}">
-                                            {{ heure.hDebut }}:00 - {{ heure.hFin }}:00
-                                        </div>
                                     {% endif %}
+
                                 {% else %}
-                                    <a class="text-white btn btn-dark" href="http://example.com">
-                                        <div style="height:100%;width:100%" classe="{{ heure.classe }}">
-                                            {{ heure.hDebut }}:00 - {{ heure.hFin }}:00
-                                        </div>
-                                    </a>
+                                    <div class="{{ jour.classe }}" style="height:100%;width:100%{{ jour.style }}">
+                                        {{ heure.hDebut }}:00 - {{ heure.hFin }}:00
+                                    </div>
                                 {% endif %}
-
-                            {% else %}
-                                <div class="{{ jour.classe }}" style="height:100%;width:100%{{ jour.style }}">
-                                    {{ heure.hDebut }}:00 - {{ heure.hFin }}:00
-                                </div>
-                            {% endif %}
-                        </td>
-                    {% endfor %}
-                </tr>
-            {% endfor %}
-            </tbody>
-        </table>
-        <div class="d-flex justify-content-end">
-            <p name="reservation"></p>
-            <button class="btn btn-secondary ml-2 btn-lg mb-5" type="submit">Réserver <span class="badge badge-light">5 février 10:00-11:00</span></button>
+                            </td>
+                        {% endfor %}
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+            <form method="post">
+                  {% csrf_token %}
+                <div class="d-flex justify-content-end">
+                    <p name="reservation"></p>
+                    <button onclick="bookReservation(this)" class="btn btn-secondary ml-2 btn-lg mb-5" type="submit">Réserver <span
+                            class="badge badge-light"></span></button>
+                </div>
+            </form>
         </div>
-    </form>
+        <a href="" id="next" onclick="getOtherWeek(this)"><img class="ml-3"
+                                                               src="{% static 'crazymix/img/arrow_right.png' %}"
+                                                               style="Width:35px;"/></a>
+    </div>
 
+
+    <script type="text/javascript" src="{% static 'reservation.js' %}"></script>
 {% endblock %}

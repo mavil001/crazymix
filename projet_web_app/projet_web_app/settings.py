@@ -18,9 +18,6 @@ import mongoengine
 mongoengine.connect(db="projet_web", host='mongodb://localhost:27017')
 
 
-
-
-
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -135,6 +132,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
 
 STATIC_URL = 'static/'
+STATICFILES_DIRS = [str(BASE_DIR.joinpath('crazymix/static'))]
 MEDIA_URL='/media/'
 MEDIA_ROOT=BASE_DIR / "media"
 
