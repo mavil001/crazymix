@@ -4,7 +4,7 @@ from django.shortcuts import render,redirect
 from django.http import HttpResponse
 from crazymix.models import Utilisateur
 # from .forms import UserForm
-from .forms import LoginForm,RegisterForm
+from .forms import LoginForm, RegisterForm, ModifierProfilForm, ModifierInfoPersoForm,ModifierContactForm,ModifierAdresseForm,ModifierMdpForm
 import datetime
 import base64
 # from django_mongoengine.mongo_auth.managers import UserManager
@@ -213,7 +213,10 @@ def register(request):
             username=form.cleaned_data['username']
             first_name=form.cleaned_data['first_name']
             last_name=form.cleaned_data['last_name']
+            telephone=form.cleaned_data['telephone']
             email = form.cleaned_data['email']
+            adresse = form.cleaned_data['adresse']
+            code_postal = form.cleaned_data['code_postal']
             spotify = form.cleaned_data['spotify']
             instagram = form.cleaned_data['instagram']
             description = form.cleaned_data['description']
@@ -222,7 +225,7 @@ def register(request):
             password = form.cleaned_data['password']
             pwd=password
             hashed_password = make_password(pwd)
-            utilisateur=Utilisateur(username=username,first_name=first_name,last_name=last_name,email=email,spotify=spotify,instagram=instagram,
+            utilisateur=Utilisateur(username=username,first_name=first_name,last_name=last_name,telephone=telephone,email=email,adresse=adresse,code_postal=code_postal,spotify=spotify,instagram=instagram,
                                     description=description,avatar=avatar,role=role,password=hashed_password)
             util=Utilisateur.objects.filter(username=username)
             if len(util) ==0 :
@@ -255,3 +258,117 @@ def upload(request):
         file_url = fss.url(file)
         return render(request,'crazymix/upload.html',{'file_url':file_url})
     return render(request,'crazymix/upload.html')
+
+
+def modifierProfil(request,id:str):
+    utilisateur = Utilisateur.objects.get(id=id)
+    if request.method=='POST':
+        idUser=request.POST.get('id')
+        # form = ModifierProfilForm(request.POST, request.FILES,instance=None)
+
+
+        # idUser= form.cleaned_data['id']
+        utilisateur = Utilisateur.objects.get(id=idUser)
+
+        utilisateur.last_name =request.POST.get('last_name')
+        utilisateur.first_name = request.POST.get('first_name')
+        utilisateur.email = request.POST.get('email')
+        utilisateur.adresse = request.POST.get('adresse')
+        utilisateur.code_postal =request.POST.get('code_postal')
+        utilisateur.telephone =request.POST.get('telephone')
+        utilisateur.avatar = request.FILES.get('avatar')
+        utilisateur.spotify = request.POST.get('spotify')
+        utilisateur.instagram =request.POST.get('instagram')
+        utilisateur.description =request.POST.get('description')
+        utilisateur.role =request.POST.get('role')
+
+        # if form.is_valid():
+
+        # form = ModifierProfilForm(request.POST, instance=utilisateur)
+
+        #     form.save()
+        utilisateur.save()
+        # messages.success(request, 'Votre profil a été modifié avec succès.')
+
+        return redirect ('compte')
+    else:
+        utilisateur = Utilisateur.objects.get(id=id)
+        form=ModifierProfilForm(instance=utilisateur)
+        return render (request, 'crazymix/modifierProfil.html',{'form':form})
+
+
+def modifierContact(request,id:str):
+    utilisateur = Utilisateur.objects.get(id=id)
+    if request.method=='POST':
+        idUser=request.POST.get('id')
+        utilisateur = Utilisateur.objects.get(id=idUser)
+        utilisateur.email = request.POST.get('email')
+        utilisateur.telephone = request.POST.get('telephone')
+        utilisateur.spotify = request.POST.get('spotify')
+        utilisateur.instagram = request.POST.get('instagram')
+        utilisateur.save()
+        # messages.success(request, 'Votre profil a été modifié avec succès.')
+        return redirect('compte')
+    else:
+        utilisateur = Utilisateur.objects.get(id=id)
+        form = ModifierContactForm(instance=utilisateur)
+        return render(request, 'crazymix/modifierInfoPerso.html', {'form': form})
+
+
+def modifierInfoPerso(request,id:str):
+    utilisateur = Utilisateur.objects.get(id=id)
+    if request.method=='POST':
+        idUser=request.POST.get('id')
+        utilisateur = Utilisateur.objects.get(id=idUser)
+        if request.FILES.get('avatar') is not None:
+            utilisateur.avatar = request.FILES.get('avatar')
+        utilisateur.last_name =request.POST.get('last_name')
+        utilisateur.first_name = request.POST.get('first_name')
+        utilisateur.save()
+        # messages.success(request, 'Votre profil a été modifié avec succès.')
+        return redirect('compte')
+    else:
+        utilisateur = Utilisateur.objects.get(id=id)
+        form = ModifierInfoPersoForm(instance=utilisateur)
+        return render(request, 'crazymix/modifierContact.html', {'form': form})
+
+
+
+def modifierAdresse(request,id:str):
+    utilisateur = Utilisateur.objects.get(id=id)
+    if request.method=='POST':
+        idUser=request.POST.get('id')
+        utilisateur = Utilisateur.objects.get(id=idUser)
+        utilisateur.adresse = request.POST.get('adresse')
+        utilisateur.code_postal = request.POST.get('code_postal')
+        utilisateur.description = request.POST.get('description')
+        utilisateur.role = request.POST.get('role')
+        utilisateur.save()
+        # messages.success(request, 'Votre profil a été modifié avec succès.')
+        return redirect('compte')
+    else:
+        utilisateur = Utilisateur.objects.get(id=id)
+        form = ModifierAdresseForm(instance=utilisateur)
+        return render(request, 'crazymix/modifierContact.html', {'form': form})
+
+
+def modifierMDP(request,id:str):
+    utilisateur = Utilisateur.objects.get(id=id)
+    if request.method == 'POST':
+        idUser = request.POST.get('id')
+        utilisateur = Utilisateur.objects.get(id=idUser)
+        password = request.POST.get('ancienMdp')
+
+        ancienMdp=utilisateur.password
+        nouveaumotpasse=request.POST.get('nouveaumotpasse')
+        confirmatioMdp=request.POST.get('confirmatioMdp')
+        if check_password(password,ancienMdp):
+            if (nouveaumotpasse==confirmatioMdp):
+                utilisateur.password = make_password(nouveaumotpasse)
+        utilisateur.save()
+        # messages.success(request, 'Votre profil a été modifié avec succès.')
+        return redirect('compte')
+    else:
+        utilisateur = Utilisateur.objects.get(id=id)
+        form = ModifierMdpForm(instance=utilisateur)
+        return render(request, 'crazymix/modifierMDP.html', {'form': form})
