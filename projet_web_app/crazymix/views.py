@@ -65,7 +65,9 @@ def reservation(request):
         if (data['direction'] == ""):
             saved = bookSession(request)
             if (saved):
+                messages.add_message(request, messages.INFO, "Réservation effectuée avec succès")
                 return redirect('sessions')
+            messages.add_message(request, messages.INFO, "Cette plage est déjà réservée")
             return redirect('reservation')
         else:
             dateNow = None
@@ -74,8 +76,8 @@ def reservation(request):
             cal = calendar.Calendar(firstweekday=0)
             dateBase = data['dateIndicator'].split('/')
             if (data['direction'] == 'previous'):
-                if (dateBase[0] == '0'):
-                    if (dateBase[1] == '1'):
+                if (dateBase[0] == "0"):
+                    if (dateBase[1] == "1"):
                         newMonth = 12
                         newYear = int(dateBase[2]) - 1
                     else:
@@ -93,7 +95,7 @@ def reservation(request):
             elif (data['direction'] == 'next'):
                 actualMonthDates = cal.monthdays2calendar(int(dateBase[2]), int(dateBase[1]))
                 if (len(actualMonthDates) - 1 == int(dateBase[0])):
-                    if (int(dateBase[1]) == '12'):
+                    if (int(dateBase[1]) == 12):
                         newMonth = 1
                         newYear = int(dateBase[2]) + 1
                         newWeek = 0
@@ -246,7 +248,8 @@ def reservation(request):
                                                          'datesSemaine': datesSemaine,
                                                          'moisSemaine': moisSemaine, 'today': today,
                                                          "heureActuelle": heureActuelle, 'heures': heures,
-                                                         "dateIndicator": dateIndicator, 'isThisWeek':isThisWeek})
+                                                         "dateIndicator": dateIndicator, 'isThisWeek':isThisWeek,
+                                                         "year":dateRef.year})
 
 
 # class AjaxHandler(View):
@@ -419,8 +422,8 @@ def getUser(request):
 
 def validateReservation(dateTimeDebut, dateTimeFin):
 
-    reservations= Reservation.objects(debut_lte=dateTimeFin, fin_gte=dateTimeFin)
-    if(reservations and len(reservations)==0):
+    reservations= Reservation.objects(debut__lte=dateTimeFin, fin__gte=dateTimeFin)
+    if(len(reservations)==0):
         return True
     return False
 

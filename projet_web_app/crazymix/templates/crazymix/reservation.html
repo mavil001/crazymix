@@ -9,7 +9,7 @@
         <input type="text" style="visibility: hidden;" name="dateIndicator" value="{{ dateIndicator }}"></input>
         <input type="text" style="visibility: hidden;" name="dateToday" value="{{ today }}"></input>
         <input type="text" style="visibility: hidden;" name="direction"></input>
-        <h3 class="text-center mb-3">{{ moisSemaine }}</h3>
+        <h3 class="text-center mb-3">{{ moisSemaine }} {{ year }}</h3>
         {% if isThisWeek is None %}
             <div class="d-flex align-items-center justify-content-center">
             <a href="#" id="previous" onclick="getOtherWeek('previous')"><img class="mr-3"
@@ -23,6 +23,11 @@
 
         {% endif %}
         <div>
+         <ul class="messages">
+                        {% for message in messages %}
+                            <li {% if message.tags %} class="{{ message.tags }} text-danger"{% endif %}>{{ message }}</li>
+                        {% endfor %}
+                    </ul>
             <table class="table table-dark">
                 <thead>
                 <tr>
