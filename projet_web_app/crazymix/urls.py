@@ -13,5 +13,10 @@ urlpatterns = [
     path('inscription/new', views.inscription, name="inscription"),
     path('compte/', views.compte, name="compte"),
     path('infos/', views.infos, name="infos"),
-    path("upload/", views.upload, name="upload")
+    path("upload/", views.upload, name="upload"),
+    path("modifierProfil/<str:id>", views.modifierProfil, name="modifierProfil"),
+    path("modifierInfoPerso/<str:id>", views.modifierInfoPerso, name="modifierInfoPerso"),
+    path("modifierContact/<str:id>", views.modifierContact, name="modifierContact"),
+    path("modifierAdresse/<str:id>", views.modifierAdresse, name="modifierAdresse"),
+    path("modifierMDP/<str:id>", views.modifierMDP, name="modifierMDP")
 ]
