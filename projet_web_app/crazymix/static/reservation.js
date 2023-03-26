@@ -28,21 +28,31 @@ async function makeRequest(url, method, body) {
         return response.json()
     }).then(data => {
         data = data;
+        if(data['Success']){
+            makeRequest('/crazymix/sessions', 'get')
+        }
     })
-
 }
 
-async function getOtherWeek(e) {
-    makeRequest('/crazymix/reservation/new', 'post', body = JSON.stringify(({movement: e.id})))
+async function getOtherWeek(direction) {
+    inputDirection=document.getElementsByName('direction')
+    inputDirection[0].setAttribute('value', direction);
+
+    // dateIndicator=document.getElementsByName('dateIndicator')
+    // dateIndicator[0].setAttribute('value', dateIndicator[0].innerText)
+    document.getElementById('reservationForm').submit();
 }
 
+// async function submitForm(e) {
+//     e.preventDefault();
+// document.getElementById('reservationForm').submit();
+// }
 async function bookReservation(e) {
     let body = JSON.stringify({'reservation': e.lastChild.innerText})
     let data = await makeRequest('/crazymix/reservation/new', 'post', body)
     if (data) {
-        let redirect = 'redirect';
     }
-    let other = await data['Success']
+    // let other = await data['Success']
 }
 
 async function completeReservation(response) {
@@ -132,10 +142,14 @@ async function selectSchedule(e) {
     }
     //ajoute le contenu de la réservation dans le bouton de soumission
     var button = document.getElementsByClassName('badge badge-light');
+    var input= document.getElementsByName('reservation');
     if (schedulesSelected.length != 0) {
-        button[0].innerText = date + ' de ' + schedulesSelected[0].hDebut + '-' + schedulesSelected[schedulesSelected.length - 1].hFin
+        var reservationFormat=date + ' de ' + schedulesSelected[0].hDebut + '-' + schedulesSelected[schedulesSelected.length - 1].hFin;
+        button[0].innerText = reservationFormat;
+        input[0].setAttribute('value', reservationFormat);
     } else {
         button[0].innerText = ""
+        input[0].value="";
     }
 }
 

@@ -3,10 +3,12 @@
 
 {% block title %}Crazymix-Accueil{% endblock %}
 <div style="background-image: url('{% static "crazymix/img/studio.jpg" %}'); background-size: cover;">
-{% block contenu %}
+    {% block contenu %}
 
-<a class="btn btn-light d-table mt-5 mx-auto" href="{% url 'register' %}">M'inscrire</a>
-
-{#<a class="btn btn-light d-table mt-5 mx-auto" href="{% url 'crazymix:reservation' %}">Réserver ma session au studio</a>#}
-    </div>
-{% endblock %}
+        <a class="btn btn-light d-table mt-5 mx-auto" href="{% url 'register' %}">M'inscrire</a>
+        {% if 'is_authenticated' in request.session %}
+            <a class="btn btn-light d-table mt-5 mx-auto" href="/crazymix/reservation/new">Réserver ma session au
+                studio</a>
+        {% endif %}
+        </div>
+    {% endblock %}

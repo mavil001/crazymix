@@ -21,8 +21,8 @@ from crazymix.models import ROLE
 
 
 class LoginForm(forms.Form):
-    username = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control  col-4 '}))
-    password = forms.CharField(widget=forms.PasswordInput(attrs={'class': 'form-control  col-4 '}))
+    username = forms.CharField(label="Nom d'utilisateur",widget=forms.TextInput(attrs={'class': 'form-control  col-4 '}))
+    password = forms.CharField(label="Mot de passe", widget=forms.PasswordInput(attrs={'class': 'form-control  col-4 '}))
 
 class RegisterForm(forms.Form):
         username= forms.CharField( label="Nom d'utilisateur",
