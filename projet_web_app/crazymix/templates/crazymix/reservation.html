@@ -4,7 +4,7 @@
 
 {% block contenu %}
     <form id="reservationForm" method="post" action="{% url 'reservation' %}">
-
+        <input type="hidden" id="reservation_id" name="reservation_id" value={{ reservation_id }}>
         <input type="text" style="visibility: hidden;" name="reservation"></input>
         <input type="text" style="visibility: hidden;" name="dateIndicator" value="{{ dateIndicator }}"></input>
         <input type="text" style="visibility: hidden;" name="dateToday" value="{{ today }}"></input>

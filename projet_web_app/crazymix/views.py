@@ -29,7 +29,7 @@ def index(request):
     return render(request, 'crazymix/index.html', {'title': 'CrazyMix - Studio'})
 
 
-def bookSession(request):
+def bookSession(request, reservation_id=None):
     user = getUser(request)
     if (True):
         if (user != ""):
@@ -48,22 +48,35 @@ def bookSession(request):
                 dateTimeFin = datetime(int(date[2].strip()), int(date[1].strip()), int(date[0].strip()),
                                        int(fin[0].strip()), int(fin[1].strip()), 0)
 
+                # if (validateReservation(dateTimeDebut, dateTimeFin)):
+                #     reservation = Reservation(debut=dateTimeDebut, fin=dateTimeFin, user=user, statut="EN_ATTENTE")
+                #     reservation.save()
+                #     return True
                 if (validateReservation(dateTimeDebut, dateTimeFin)):
-                    reservation = Reservation(debut=dateTimeDebut, fin=dateTimeFin, user=user, statut="EN_ATTENTE")
-                    reservation.save()
+                    if( reservation_id is None):
+                        reservation = Reservation(debut=dateTimeDebut, fin=dateTimeFin, user=user, statut="EN_ATTENTE")
+                        reservation.save()
+                    else:
+                        reservation=Reservation.objects.get(id=reservation_id)
+                        reservation.debut = dateTimeDebut
+                        reservation.fin = dateTimeFin
+                        reservation.save()
                     return True
     return False
 
 
-def reservation(request):
+def reservation(request,reservation_id=None):
+
     user = getUser(request)
     if(user == ""):
         return redirect('login')
     isThisWeek=True
     if (request.method == 'POST'):
+
         data = request.POST
+        reservation_id =request.POST.get('reservation_id')
         if (data['direction'] == ""):
-            saved = bookSession(request)
+            saved = bookSession(request, reservation_id)
             if (saved):
                 messages.add_message(request, messages.INFO, "Réservation effectuée avec succès")
                 return redirect('sessions')
@@ -249,7 +262,9 @@ def reservation(request):
                                                          'moisSemaine': moisSemaine, 'today': today,
                                                          "heureActuelle": heureActuelle, 'heures': heures,
                                                          "dateIndicator": dateIndicator, 'isThisWeek':isThisWeek,
-                                                         "year":dateRef.year})
+                                                         "year":dateRef.year,
+                                                         "reservation_id":reservation_id})
+
 
 
 # class AjaxHandler(View):
@@ -280,9 +295,13 @@ def reservation(request):
 
 
 def sessions(request):
-    return render(request,'crazymix/sessions.html', {'title':"Mes sessions d'enregistrement"})
+    utilisateur_id = request.session['utilisateur_id']
+
+    reservations=Reservation.objects.filter(user=utilisateur_id)
+    return render(request,'crazymix/sessions.html', {'title':"Mes sessions d'enregistrement","reservations":reservations})
 
 def extraits_artistes(request):
+
     return render(request,'crazymix/extraits_artistes.html', {'title':'Exraits - Artistes'})
 
 def connexion(request):
@@ -539,3 +558,13 @@ def modifierMDP(request,id:str):
         utilisateur = Utilisateur.objects.get(id=id)
         form = ModifierMdpForm(instance=utilisateur)
         return render(request, 'crazymix/modifierMDP.html', {'form': form})
+
+
+def annulerReservation(request,reservation_id):
+    utilisateur_id = request.session['utilisateur_id']
+    try:
+        reservation=Reservation.objects.get(id=reservation_id)
+    except Reservation.DoesNotExist:
+        return  HttpResponse("Reservation n'existe pas")
+    reservation.delete()
+    return redirect('sessions')

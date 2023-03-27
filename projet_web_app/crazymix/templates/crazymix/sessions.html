@@ -9,6 +9,14 @@
             <li {% if message.tags %} class="{{ message.tags }} text-success"{% endif %}>{{ message }}</li>
         {% endfor %}
     </ul>
+    <ul>
+     {% for x in reservations %}
+         <li>{{  x.debut}}-{{ x.fin }}<a  class="btn btn-primary" style="margin: 20px;" href="{% url 'reservationModif' x.id %}">Modifier</a>
+
+         <a  class="btn btn-primary" style="margin: 20px;" href="{% url 'annulerReservation' x.id  %}">Annuler</a></li>
+    {% endfor %}
+    </ul>
+
 
 
 {% endblock %}
