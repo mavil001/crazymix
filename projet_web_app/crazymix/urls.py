@@ -15,10 +15,12 @@ urlpatterns = [
     path('compte/', views.compte, name="compte"),
     path('infos/', views.infos, name="infos"),
     path("upload/", views.upload, name="upload"),
+    path("uploadAudio/", views.uploadAudio, name="uploadAudio"),
     path("modifierProfil/<str:id>", views.modifierProfil, name="modifierProfil"),
     path("modifierInfoPerso/<str:id>", views.modifierInfoPerso, name="modifierInfoPerso"),
     path("modifierContact/<str:id>", views.modifierContact, name="modifierContact"),
     path("modifierAdresse/<str:id>", views.modifierAdresse, name="modifierAdresse"),
     path("modifierMDP/<str:id>", views.modifierMDP, name="modifierMDP"),
-    path("annulerReservation/<reservation_id>",views.annulerReservation,name="annulerReservation")
+    path("annulerReservation/<reservation_id>",views.annulerReservation,name="annulerReservation"),
+    path("supprimerExtrait/<id>", views.supprimerExtrait, name="supprimerExtrait")
 ]
