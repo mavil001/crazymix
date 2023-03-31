@@ -3,18 +3,16 @@ from django.core.files.storage import FileSystemStorage
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from crazymix.models import Utilisateur,Reservation,ExtraitAudio
-# from .forms import UserForm
-from .forms import LoginForm, RegisterForm, ModifierProfilForm, ModifierInfoPersoForm,ModifierContactForm,ModifierAdresseForm,ModifierMdpForm
+from .forms import LoginForm, RegisterForm, ModifierProfilForm, \
+    ModifierInfoPersoForm, ModifierContactForm, ModifierAdresseForm, \
+    ModifierMdpForm
 import datetime
 import base64
-# from django_mongoengine.mongo_auth.managers import UserManager
 import calendar
 from datetime import date
 from datetime import datetime
 from django.core.files.storage import FileSystemStorage
-# from pydub import AudioSegment
-# from forms import LoginForm
-# from .models import User
+from pydub import AudioSegment
 from django_mongoengine.mongo_auth.managers import UserManager
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.hashers import make_password
@@ -51,7 +49,7 @@ def bookSession(request, reservation_id=None):
                                        int(fin[0].strip()), int(fin[1].strip()), 0)
 
                 if (validateReservation(dateTimeDebut, dateTimeFin)):
-                    if( reservation_id is None):
+                    if(reservation_id == 'None'):
                         reservation = Reservation(debut=dateTimeDebut, fin=dateTimeFin, user=user, statut="EN_ATTENTE")
                         reservation.save()
                     else:
@@ -293,36 +291,7 @@ def reservation(request,reservation_id=None):
                                                          "dateIndicator": dateIndicator, 'isThisWeek': isThisWeek,
                                                          "year": dateRef.year, 'reservation_id':reservation_id})
 
-
-# class AjaxHandler(View):
-# def post(self, request):
-#     user = getUser(request)
-#     if(True):
-#     # if(user != ""):
-#         data=json.loads(request.body)
-#         data=data['reservation'].strip()
-#         dateHeures=data.split("de")
-#         date=dateHeures[0].split('/')
-#         heureDebutFin=dateHeures[1].split("-")
-#         debut=heureDebutFin[0].split(':')
-#         fin=heureDebutFin[1].split(':')
-#         dateTimeDebut=datetime(int(date[2].strip()), int(date[1].strip()), int(date[0].strip()),
-#                                int(debut[0].strip()), int(debut[1].strip()), 0)
-#         dateTimeFin= datetime(int(date[2].strip()), int(date[1].strip()), int(date[0].strip()),
-#                               int(fin[0].strip()), int(fin[1].strip()), 0)
-#
-#         # valid=validateReservation(dateTimeDebut, dateTimeFin)
-#         if(True):
-#             reservation=Reservation(debut=dateTimeDebut, fin=dateTimeFin, user=user, statut="EN_ATTENTE")
-#             reservation.save()
-#             # return redirect('sessions')
-#     #     si valide, rediriger vers la page des sessions avec message, sinon remettre formulaire avec message
-#     return JsonResponse({'Success':'success'})
-# def get(self, request):
-
-
 def sessions(request):
-    return render(request, 'crazymix/sessions.html', {'title': "Mes sessions d'enregistrement"})
     utilisateur_id = request.session['utilisateur_id']
 
     reservations=Reservation.objects.filter(user=utilisateur_id)
@@ -330,7 +299,6 @@ def sessions(request):
 
 
 def extraits_artistes(request):
-    return render(request, 'crazymix/extraits_artistes.html', {'title': 'Exraits - Artistes'})
     utilisateur_id=request.session['utilisateur_id']
     extraits=ExtraitAudio.objects.filter(utilisateur=utilisateur_id)
     extraits_liste=[]
@@ -467,15 +435,6 @@ def register(request):
     return render(request, 'registration/signup.html', {'form': form})
 
 
-
-# def sessionUser(request):
-#     user_id=request.session.get('user_id')
-#     if user_id is not None:
-#         user = User.objects.get(pk=user_id)
-#     else:
-#         return redirect ('login')
-
-
 def upload(request):
     if request.method == "POST" and request.FILES["upload"]:
         upload = request.FILES["upload"]
@@ -484,9 +443,6 @@ def upload(request):
         file_url = fss.url(file)
         return render(request, 'crazymix/upload.html', {'file_url': file_url})
     return render(request, 'crazymix/upload.html')
-
-
-
 
 
 def uploadAudio(request):
