@@ -2,9 +2,10 @@ from django.contrib import messages
 from django.core.files.storage import FileSystemStorage
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
-from crazymix.models import Utilisateur,Reservation
+from crazymix.models import Utilisateur, Reservation
 # from .forms import UserForm
-from .forms import LoginForm, RegisterForm, ModifierProfilForm, ModifierInfoPersoForm,ModifierContactForm,ModifierAdresseForm,ModifierMdpForm
+from .forms import LoginForm, RegisterForm, ModifierProfilForm, ModifierInfoPersoForm, ModifierContactForm, \
+    ModifierAdresseForm, ModifierMdpForm
 import datetime
 import base64
 # from django_mongoengine.mongo_auth.managers import UserManager
@@ -57,9 +58,9 @@ def bookSession(request):
 
 def reservation(request):
     user = getUser(request)
-    if(user == ""):
+    if (user == ""):
         return redirect('login')
-    isThisWeek=True
+    isThisWeek = True
     if (request.method == 'POST'):
         data = request.POST
         if (data['direction'] == ""):
@@ -71,10 +72,11 @@ def reservation(request):
             return redirect('reservation')
         else:
             dateNow = None
-            today=None
-            heureActuelle=0
+            today = None
+            heureActuelle = 0
             cal = calendar.Calendar(firstweekday=0)
             dateBase = data['dateIndicator'].split('/')
+            actualMonthDates = cal.monthdays2calendar(int(dateBase[2]), int(dateBase[1]))
             if (data['direction'] == 'previous'):
                 if (dateBase[0] == "0"):
                     if (dateBase[1] == "1"):
@@ -85,16 +87,28 @@ def reservation(request):
                         newYear = int(dateBase[2])
 
                     monthDates = cal.monthdays2calendar(newYear, newMonth)
+                    if actualMonthDates[0][0][0] == 0:
+                        newMonth = int(dateBase[1]) - 1
+                        newYear = int(dateBase[2])
+                        index_semaine = len(monthDates) - 2
+
                     index_semaine = len(monthDates) - 1
                 else:
-                    newMonth = int(dateBase[1])
-                    newYear = int(dateBase[2])
-                    index_semaine = int(dateBase[0]) - 1
-                    monthDates = cal.monthdays2calendar(newYear, newMonth)
+                    if dateBase[0] == '1'and actualMonthDates[0][0][0] == 0:
+                        newMonth=int(dateBase[1])-1
+                        newYear = int(dateBase[2])
+                        monthDates = cal.monthdays2calendar(newYear, newMonth)
+                        index_semaine = len(monthDates) - 1
+                    else:
+                        newMonth = int(dateBase[1])
+                        newYear = int(dateBase[2])
+                        index_semaine = int(dateBase[0]) - 1
+                        monthDates = cal.monthdays2calendar(newYear, newMonth)
 
             elif (data['direction'] == 'next'):
-                actualMonthDates = cal.monthdays2calendar(int(dateBase[2]), int(dateBase[1]))
                 if (len(actualMonthDates) - 1 == int(dateBase[0])):
+                    # si derniere semaine du mois et que dates semaine finissent par 0 aloors ajouter une semaine d eplus
+
                     if (int(dateBase[1]) == 12):
                         newMonth = 1
                         newYear = int(dateBase[2]) + 1
@@ -103,8 +117,11 @@ def reservation(request):
                         newWeek = 0
                         newMonth = int(dateBase[1]) + 1
                         newYear = int(dateBase[2])
+                    if actualMonthDates[len(actualMonthDates)-1][6][0]==0:
+                        index_semaine=1
+                    else:
+                        index_semaine = 0
                     monthDates = cal.monthdays2calendar(newYear, newMonth)
-                    index_semaine = 0
                 else:
                     newMonth = int(dateBase[1])
                     newYear = int(dateBase[2])
@@ -112,25 +129,26 @@ def reservation(request):
                     monthDates = cal.monthdays2calendar(newYear, newMonth)
             dateRef = date(newYear, newMonth, 1)
             dateNow = datetime.now()
-            if(data['dateToday'] != 'None'):
-                dateToday= data['dateToday'].split(':')
-                splitedInfos=[]
+            if (data['dateToday'] != 'None'):
+                dateToday = data['dateToday'].split(':')
+                splitedInfos = []
                 splitedInfos.append(dateToday[1].split(','))
                 splitedInfos.append(dateToday[2].split(','))
                 splitedInfos.append(dateToday[3].split(','))
                 splitedInfos.append(dateToday[4].split('}'))
-                dateTodayCleaned={'date':int(splitedInfos[0][0].strip()), 'week': int(splitedInfos[1][0].strip()),
-                                  'month':int(splitedInfos[2][0].strip()), 'year':int(splitedInfos[3][0].strip())}
+                dateTodayCleaned = {'date': int(splitedInfos[0][0].strip()), 'week': int(splitedInfos[1][0].strip()),
+                                    'month': int(splitedInfos[2][0].strip()), 'year': int(splitedInfos[3][0].strip())}
                 today = dateTodayCleaned
-                if dateRef.year == int(dateTodayCleaned['year']) and dateRef.month == int(dateTodayCleaned['month']) and index_semaine == int(dateTodayCleaned['week']):
-                    isThisWeek="True"
+                if dateRef.year == int(dateTodayCleaned['year']) and dateRef.month == int(
+                        dateTodayCleaned['month']) and index_semaine == int(dateTodayCleaned['week']):
+                    isThisWeek = "True"
                     return redirect('reservation')
                 else:
-                    isThisWeek=None
+                    isThisWeek = None
             else:
-                isThisWeek=None
+                isThisWeek = None
     else:
-        data=None
+        data = None
         # Date aujourd'hui
         dateNow = datetime.now()
         today = dateNow.day
@@ -156,7 +174,7 @@ def reservation(request):
                 semaine_trouvee = True
             else:
                 index_semaine = index_semaine + 1
-        today ={'date':dateNow.day, 'week': index_semaine, 'month':dateNow.month, 'year':dateNow.year}
+        today = {'date': dateNow.day, 'week': index_semaine, 'month': dateNow.month, 'year': dateNow.year}
         dateRef = dateNow
 
     # Render calendrier
@@ -224,17 +242,31 @@ def reservation(request):
                 {'dateComplete': "{}/{}/{}".format(semainePadding[index][0], month, year),
                  'jour': joursSemaine[index],
                  'classe': classe, 'style': style, 'date': semainePadding[index][0],
-                 'heures': heures})
+                 'year': year, 'month': month, 'indisponibilites':[]})
 
         else:
-            if request.method=='GET' and semaineActuelle[index][0] == today['date']:
+            if request.method == 'GET' and semaineActuelle[index][0] == today['date']:
                 style = "background-color: #5a6268;border-radius:7px;"
-            elif ((request.method=='GET' and semaineActuelle[index][0] < today['date'])):
+            elif ((request.method == 'GET' and semaineActuelle[index][0] < today['date'])):
                 classe = 'text-secondary px-2'
             datesSemaine.append(
                 {'dateComplete': "{}/{}/{}".format(semaineActuelle[index][0], dateRef.month, dateRef.year),
                  'date': semaineActuelle[index][0], 'jour': joursSemaine[index],
-                 'classe': classe, 'style': style})
+                 'classe': classe, 'style': style, 'month': dateRef.month, 'year': dateRef.year, 'indisponibilites':[]})
+
+    firstDate = datetime(datesSemaine[0]['year'], datesSemaine[0]['month'], datesSemaine[0]['date'], 0, 0, 0)
+    lastIndex = len(datesSemaine) - 1
+    lastDate = datetime(datesSemaine[lastIndex]['year'], datesSemaine[lastIndex]['month'], datesSemaine[lastIndex]['date'], 23, 59, 59)
+    reservations = Reservation.objects.filter(debut__gte=firstDate, fin__lte=lastDate)
+
+    if (len(reservations) != 0):
+        for reservation in reservations:
+            for jour in datesSemaine:
+                indisponibilites = []
+                if reservation['debut'].day == jour['date']:
+                    for i in range(reservation['debut'].hour, reservation['fin'].hour):
+                        jour['indisponibilites'].append(i)
+
 
     # Attribution du/des nom(s) de(s) mois de la semaine
     moisSemaine = mois[dateRef.month - 1]
@@ -248,8 +280,8 @@ def reservation(request):
                                                          'datesSemaine': datesSemaine,
                                                          'moisSemaine': moisSemaine, 'today': today,
                                                          "heureActuelle": heureActuelle, 'heures': heures,
-                                                         "dateIndicator": dateIndicator, 'isThisWeek':isThisWeek,
-                                                         "year":dateRef.year})
+                                                         "dateIndicator": dateIndicator, 'isThisWeek': isThisWeek,
+                                                         "year": dateRef.year})
 
 
 # class AjaxHandler(View):
@@ -280,63 +312,68 @@ def reservation(request):
 
 
 def sessions(request):
-    return render(request,'crazymix/sessions.html', {'title':"Mes sessions d'enregistrement"})
+    return render(request, 'crazymix/sessions.html', {'title': "Mes sessions d'enregistrement"})
+
 
 def extraits_artistes(request):
-    return render(request,'crazymix/extraits_artistes.html', {'title':'Exraits - Artistes'})
+    return render(request, 'crazymix/extraits_artistes.html', {'title': 'Exraits - Artistes'})
+
 
 def connexion(request):
-    return render(request,'crazymix/connexion.html', {'title':'Se connecter'})
+    return render(request, 'crazymix/connexion.html', {'title': 'Se connecter'})
+
+
 def deconnexion(request):
     request.session.clear()
     return redirect('index')
+
+
 def inscription(request):
-    #form = UserForm()
-    return render(request,'registration/signup.html', {'title':"S'inscrire"})
+    # form = UserForm()
+    return render(request, 'registration/signup.html', {'title': "S'inscrire"})
     # return render(request,'crazymix/inscription.html', {'title':"S'inscrire", 'form' : form})
+
 
 def compte(request):
     # def authenticate(self, username=None, password=None, **kwargs):
     #     try:
-            ab=request.session.get('is_authenticated')
+    ab = request.session.get('is_authenticated')
 
-            if 'is_authenticated' in request.session and request.session['is_authenticated']:
+    if 'is_authenticated' in request.session and request.session['is_authenticated']:
 
-
-                utilisateur_id = request.session['utilisateur_id']
-                utilisateur = Utilisateur.objects.get(id=utilisateur_id)
-                image_proxy=utilisateur.avatar
-                image_bytes = image_proxy.read()
-                image_data = base64.b64encode(image_bytes).decode('utf-8')
-                image_src = f"data:image/jpeg;base64,{image_data}"
-
+        utilisateur_id = request.session['utilisateur_id']
+        utilisateur = Utilisateur.objects.get(id=utilisateur_id)
+        image_proxy = utilisateur.avatar
+        image_bytes = image_proxy.read()
+        image_data = base64.b64encode(image_bytes).decode('utf-8')
+        image_src = f"data:image/jpeg;base64,{image_data}"
 
         # except (DoesNotExist, ValidationError):
 
-            # request.session['is_autenticated']= True
-            #  utilisateur_id = request.session['utilisateur_id']
-            #  utilisateur = Utilisateur.objects.get(id=utilisateur_id);
+        # request.session['is_autenticated']= True
+        #  utilisateur_id = request.session['utilisateur_id']
+        #  utilisateur = Utilisateur.objects.get(id=utilisateur_id);
 
-                return render(request,'crazymix/compte.html', {'title':'Mon compte', 'utilisateur':utilisateur,'image_src':image_src})
-            else:
-                return HttpResponse('Veuillez vous connecter')
+        return render(request, 'crazymix/compte.html',
+                      {'title': 'Mon compte', 'utilisateur': utilisateur, 'image_src': image_src})
+    else:
+        return HttpResponse('Veuillez vous connecter')
 
 
 def infos(request):
-    return render(request,'crazymix/infos.html', {'title':'Informations sur le site du studio'})
+    return render(request, 'crazymix/infos.html', {'title': 'Informations sur le site du studio'})
 
 
 def login(request):
-
-    if (request.method =="POST"):
+    if (request.method == "POST"):
         form = LoginForm(request.POST)
         if form.is_valid():
-            username=form.cleaned_data['username']
-            password=form.cleaned_data['password']
+            username = form.cleaned_data['username']
+            password = form.cleaned_data['password']
             # pwd=password
             # hashed_password = make_password(pwd)
             # if check_password('password', hashed_password):
-            utilisateur=Utilisateur.objects.filter(username=username).first()
+            utilisateur = Utilisateur.objects.filter(username=username).first()
 
             # user = authenticate(request, username=username, password=password)
             # si la liste n'est pas vide donc il a trouvé un user avec le username et le pwd'
@@ -347,7 +384,6 @@ def login(request):
             else:
 
                 if check_password(password, utilisateur.password):
-
                     request.session['utilisateur_id'] = utilisateur.id
                     request.session['is_authenticated'] = True
 
@@ -356,18 +392,19 @@ def login(request):
         # user=User(username='admin',password= make_password('12345qwe!'))
         # user.save()
         form = LoginForm()
-    context={'user':request.session.get('user',None)}
-    return render(request, 'registration/login.html', {'form': form,'context':context})
+    context = {'user': request.session.get('user', None)}
+    return render(request, 'registration/login.html', {'form': form, 'context': context})
+
 
 def register(request):
     if (request.method == "POST"):
         form = RegisterForm(request.POST, request.FILES)
 
         if form.is_valid():
-            username=form.cleaned_data['username']
-            first_name=form.cleaned_data['first_name']
-            last_name=form.cleaned_data['last_name']
-            telephone=form.cleaned_data['telephone']
+            username = form.cleaned_data['username']
+            first_name = form.cleaned_data['first_name']
+            last_name = form.cleaned_data['last_name']
+            telephone = form.cleaned_data['telephone']
             email = form.cleaned_data['email']
             adresse = form.cleaned_data['adresse']
             code_postal = form.cleaned_data['code_postal']
@@ -379,20 +416,22 @@ def register(request):
             password = form.cleaned_data['password']
             pwd = password
             hashed_password = make_password(pwd)
-            utilisateur=Utilisateur(username=username,first_name=first_name,last_name=last_name,telephone=telephone,email=email,adresse=adresse,code_postal=code_postal,spotify=spotify,instagram=instagram,
-                                    description=description,avatar=avatar,role=role,password=hashed_password)
-            util=Utilisateur.objects.filter(username=username)
-            if len(util) ==0 :
+            utilisateur = Utilisateur(username=username, first_name=first_name, last_name=last_name,
+                                      telephone=telephone, email=email, adresse=adresse, code_postal=code_postal,
+                                      spotify=spotify, instagram=instagram,
+                                      description=description, avatar=avatar, role=role, password=hashed_password)
+            util = Utilisateur.objects.filter(username=username)
+            if len(util) == 0:
                 utilisateur.save()
                 return redirect('login')
             else:
-                messages.add_message(request, messages.INFO, "Ce nom d'utilisateur existe déja, Veuillez utiliser un autre")
+                messages.add_message(request, messages.INFO,
+                                     "Ce nom d'utilisateur existe déja, Veuillez utiliser un autre")
         return render(request, 'registration/signup.html', {'form': form})
     else:
         form = RegisterForm()
 
     return render(request, 'registration/signup.html', {'form': form})
-
 
 
 # def sessionUser(request):
@@ -403,51 +442,51 @@ def register(request):
 #         return redirect ('login')
 
 
-
 def upload(request):
-    if request.method=="POST" and request.FILES["upload"]:
+    if request.method == "POST" and request.FILES["upload"]:
         upload = request.FILES["upload"]
         fss = FileSystemStorage()
         file = fss.save(upload.name, upload)
         file_url = fss.url(file)
-        return render(request,'crazymix/upload.html',{'file_url':file_url})
-    return render(request,'crazymix/upload.html')
+        return render(request, 'crazymix/upload.html', {'file_url': file_url})
+    return render(request, 'crazymix/upload.html')
+
 
 def getUser(request):
-    utilisateur=""
+    utilisateur = ""
     if 'is_authenticated' in request.session and request.session['is_authenticated']:
         utilisateur_id = request.session['utilisateur_id']
         utilisateur = Utilisateur.objects.get(id=utilisateur_id)
     return utilisateur
 
-def validateReservation(dateTimeDebut, dateTimeFin):
 
-    reservations= Reservation.objects(debut__lte=dateTimeFin, fin__gte=dateTimeFin)
-    if(len(reservations)==0):
+def validateReservation(dateTimeDebut, dateTimeFin):
+    reservations = Reservation.objects(debut__lte=dateTimeFin, fin__gte=dateTimeFin)
+    if (len(reservations) == 0):
         return True
     return False
 
-def modifierProfil(request,id:str):
-    utilisateur = Utilisateur.objects.get(id=id)
-    if request.method=='POST':
-        idUser=request.POST.get('id')
-        # form = ModifierProfilForm(request.POST, request.FILES,instance=None)
 
+def modifierProfil(request, id: str):
+    utilisateur = Utilisateur.objects.get(id=id)
+    if request.method == 'POST':
+        idUser = request.POST.get('id')
+        # form = ModifierProfilForm(request.POST, request.FILES,instance=None)
 
         # idUser= form.cleaned_data['id']
         utilisateur = Utilisateur.objects.get(id=idUser)
 
-        utilisateur.last_name =request.POST.get('last_name')
+        utilisateur.last_name = request.POST.get('last_name')
         utilisateur.first_name = request.POST.get('first_name')
         utilisateur.email = request.POST.get('email')
         utilisateur.adresse = request.POST.get('adresse')
-        utilisateur.code_postal =request.POST.get('code_postal')
-        utilisateur.telephone =request.POST.get('telephone')
+        utilisateur.code_postal = request.POST.get('code_postal')
+        utilisateur.telephone = request.POST.get('telephone')
         utilisateur.avatar = request.FILES.get('avatar')
         utilisateur.spotify = request.POST.get('spotify')
-        utilisateur.instagram =request.POST.get('instagram')
-        utilisateur.description =request.POST.get('description')
-        utilisateur.role =request.POST.get('role')
+        utilisateur.instagram = request.POST.get('instagram')
+        utilisateur.description = request.POST.get('description')
+        utilisateur.role = request.POST.get('role')
 
         # if form.is_valid():
 
@@ -457,17 +496,17 @@ def modifierProfil(request,id:str):
         utilisateur.save()
         # messages.success(request, 'Votre profil a été modifié avec succès.')
 
-        return redirect ('compte')
+        return redirect('compte')
     else:
         utilisateur = Utilisateur.objects.get(id=id)
-        form=ModifierProfilForm(instance=utilisateur)
-        return render (request, 'crazymix/modifierProfil.html',{'form':form})
+        form = ModifierProfilForm(instance=utilisateur)
+        return render(request, 'crazymix/modifierProfil.html', {'form': form})
 
 
-def modifierContact(request,id:str):
+def modifierContact(request, id: str):
     utilisateur = Utilisateur.objects.get(id=id)
-    if request.method=='POST':
-        idUser=request.POST.get('id')
+    if request.method == 'POST':
+        idUser = request.POST.get('id')
         utilisateur = Utilisateur.objects.get(id=idUser)
         utilisateur.email = request.POST.get('email')
         utilisateur.telephone = request.POST.get('telephone')
@@ -482,14 +521,14 @@ def modifierContact(request,id:str):
         return render(request, 'crazymix/modifierInfoPerso.html', {'form': form})
 
 
-def modifierInfoPerso(request,id:str):
+def modifierInfoPerso(request, id: str):
     utilisateur = Utilisateur.objects.get(id=id)
-    if request.method=='POST':
-        idUser=request.POST.get('id')
+    if request.method == 'POST':
+        idUser = request.POST.get('id')
         utilisateur = Utilisateur.objects.get(id=idUser)
         if request.FILES.get('avatar') is not None:
             utilisateur.avatar = request.FILES.get('avatar')
-        utilisateur.last_name =request.POST.get('last_name')
+        utilisateur.last_name = request.POST.get('last_name')
         utilisateur.first_name = request.POST.get('first_name')
         utilisateur.save()
         # messages.success(request, 'Votre profil a été modifié avec succès.')
@@ -500,11 +539,10 @@ def modifierInfoPerso(request,id:str):
         return render(request, 'crazymix/modifierContact.html', {'form': form})
 
 
-
-def modifierAdresse(request,id:str):
+def modifierAdresse(request, id: str):
     utilisateur = Utilisateur.objects.get(id=id)
-    if request.method=='POST':
-        idUser=request.POST.get('id')
+    if request.method == 'POST':
+        idUser = request.POST.get('id')
         utilisateur = Utilisateur.objects.get(id=idUser)
         utilisateur.adresse = request.POST.get('adresse')
         utilisateur.code_postal = request.POST.get('code_postal')
@@ -519,18 +557,18 @@ def modifierAdresse(request,id:str):
         return render(request, 'crazymix/modifierContact.html', {'form': form})
 
 
-def modifierMDP(request,id:str):
+def modifierMDP(request, id: str):
     utilisateur = Utilisateur.objects.get(id=id)
     if request.method == 'POST':
         idUser = request.POST.get('id')
         utilisateur = Utilisateur.objects.get(id=idUser)
         password = request.POST.get('ancienMdp')
 
-        ancienMdp=utilisateur.password
-        nouveaumotpasse=request.POST.get('nouveaumotpasse')
-        confirmatioMdp=request.POST.get('confirmatioMdp')
-        if check_password(password,ancienMdp):
-            if (nouveaumotpasse==confirmatioMdp):
+        ancienMdp = utilisateur.password
+        nouveaumotpasse = request.POST.get('nouveaumotpasse')
+        confirmatioMdp = request.POST.get('confirmatioMdp')
+        if check_password(password, ancienMdp):
+            if (nouveaumotpasse == confirmatioMdp):
                 utilisateur.password = make_password(nouveaumotpasse)
         utilisateur.save()
         # messages.success(request, 'Votre profil a été modifié avec succès.')
