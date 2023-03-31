@@ -2,16 +2,17 @@ from django.contrib import messages
 from django.core.files.storage import FileSystemStorage
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
-from crazymix.models import Utilisateur, Reservation
+from crazymix.models import Utilisateur,Reservation,ExtraitAudio
 # from .forms import UserForm
-from .forms import LoginForm, RegisterForm, ModifierProfilForm, ModifierInfoPersoForm, ModifierContactForm, \
-    ModifierAdresseForm, ModifierMdpForm
+from .forms import LoginForm, RegisterForm, ModifierProfilForm, ModifierInfoPersoForm,ModifierContactForm,ModifierAdresseForm,ModifierMdpForm
 import datetime
 import base64
 # from django_mongoengine.mongo_auth.managers import UserManager
 import calendar
 from datetime import date
 from datetime import datetime
+from django.core.files.storage import FileSystemStorage
+# from pydub import AudioSegment
 # from forms import LoginForm
 # from .models import User
 from django_mongoengine.mongo_auth.managers import UserManager
@@ -30,7 +31,7 @@ def index(request):
     return render(request, 'crazymix/index.html', {'title': 'CrazyMix - Studio'})
 
 
-def bookSession(request):
+def bookSession(request, reservation_id=None):
     user = getUser(request)
     if (True):
         if (user != ""):
@@ -50,21 +51,30 @@ def bookSession(request):
                                        int(fin[0].strip()), int(fin[1].strip()), 0)
 
                 if (validateReservation(dateTimeDebut, dateTimeFin)):
-                    reservation = Reservation(debut=dateTimeDebut, fin=dateTimeFin, user=user, statut="EN_ATTENTE")
-                    reservation.save()
+                    if( reservation_id is None):
+                        reservation = Reservation(debut=dateTimeDebut, fin=dateTimeFin, user=user, statut="EN_ATTENTE")
+                        reservation.save()
+                    else:
+                        reservation=Reservation.objects.get(id=reservation_id)
+                        reservation.debut = dateTimeDebut
+                        reservation.fin = dateTimeFin
+                        reservation.save()
                     return True
     return False
 
 
-def reservation(request):
+def reservation(request,reservation_id=None):
+
     user = getUser(request)
     if (user == ""):
         return redirect('login')
     isThisWeek = True
     if (request.method == 'POST'):
+
         data = request.POST
+        reservation_id =request.POST.get('reservation_id')
         if (data['direction'] == ""):
-            saved = bookSession(request)
+            saved = bookSession(request, reservation_id)
             if (saved):
                 messages.add_message(request, messages.INFO, "Réservation effectuée avec succès")
                 return redirect('sessions')
@@ -281,7 +291,7 @@ def reservation(request):
                                                          'moisSemaine': moisSemaine, 'today': today,
                                                          "heureActuelle": heureActuelle, 'heures': heures,
                                                          "dateIndicator": dateIndicator, 'isThisWeek': isThisWeek,
-                                                         "year": dateRef.year})
+                                                         "year": dateRef.year, 'reservation_id':reservation_id})
 
 
 # class AjaxHandler(View):
@@ -313,10 +323,34 @@ def reservation(request):
 
 def sessions(request):
     return render(request, 'crazymix/sessions.html', {'title': "Mes sessions d'enregistrement"})
+    utilisateur_id = request.session['utilisateur_id']
+
+    reservations=Reservation.objects.filter(user=utilisateur_id)
+    return render(request,'crazymix/sessions.html', {'title':"Mes sessions d'enregistrement","reservations":reservations})
 
 
 def extraits_artistes(request):
     return render(request, 'crazymix/extraits_artistes.html', {'title': 'Exraits - Artistes'})
+    utilisateur_id=request.session['utilisateur_id']
+    extraits=ExtraitAudio.objects.filter(utilisateur=utilisateur_id)
+    extraits_liste=[]
+    for x in extraits:
+
+        audio_proxy = x.audio
+        if audio_proxy:
+            audio_bytes = audio_proxy.read()
+            audio_data = base64.b64encode(audio_bytes).decode('utf-8')
+            audio_src = f"data:audio/mpeg;base64,{audio_data}"
+        else:
+            audio_src=None
+        extraits_liste.append({'audio':audio_src,'id':x.id})
+    if (request.method == "POST"):
+        audio = request.FILES.get('uploadAudio')
+        utilisateur_id=request.session['utilisateur_id']
+        utilisateur=Utilisateur.objects.get(id=utilisateur_id)
+        extrait=ExtraitAudio(audio=audio,utilisateur=utilisateur)
+        extrait.save()
+    return render(request,'crazymix/extraits_artistes.html', {'title':'Exraits - Artistes','extraits':extraits_liste})
 
 
 def connexion(request):
@@ -425,13 +459,13 @@ def register(request):
                 utilisateur.save()
                 return redirect('login')
             else:
-                messages.add_message(request, messages.INFO,
-                                     "Ce nom d'utilisateur existe déja, Veuillez utiliser un autre")
+                messages.add_message(request, messages.INFO, "Ce nom d'utilisateur existe déja, Veuillez utiliser un autre")
         return render(request, 'registration/signup.html', {'form': form})
     else:
         form = RegisterForm()
 
     return render(request, 'registration/signup.html', {'form': form})
+
 
 
 # def sessionUser(request):
@@ -451,6 +485,23 @@ def upload(request):
         return render(request, 'crazymix/upload.html', {'file_url': file_url})
     return render(request, 'crazymix/upload.html')
 
+
+
+
+
+def uploadAudio(request):
+    if request.method=="POST" and request.FILES["upload"]:
+        audio_file=request.FILES["upload"]
+
+        # audio=AudioSegment.from_file(audio_file)
+        # extract = audio[2 * 60 * 1000: 2 * 60 * 1000 + 30 * 1000]
+        fss=FileSystemStorage()
+        file=fss.save(audio_file.name,audio_file)
+        # récupérer l'URL du fichier extrait
+        file_url = fss.url(file)
+
+        return render(request, "crazymix/uploadAudio.html",{"file_url":file_url})
+    return render(request,"crazymix/uploadAudio.html")
 
 def getUser(request):
     utilisateur = ""
@@ -577,3 +628,24 @@ def modifierMDP(request, id: str):
         utilisateur = Utilisateur.objects.get(id=id)
         form = ModifierMdpForm(instance=utilisateur)
         return render(request, 'crazymix/modifierMDP.html', {'form': form})
+
+
+def annulerReservation(request,reservation_id):
+    utilisateur_id = request.session['utilisateur_id']
+    try:
+        reservation=Reservation.objects.get(id=reservation_id)
+    except Reservation.DoesNotExist:
+        return  HttpResponse("Reservation n'existe pas")
+    reservation.delete()
+    return redirect('sessions')
+
+
+def supprimerExtrait(request,id):
+    utilisateur_id = request.session['utilisateur_id']
+    try:
+        extraits_artistes=ExtraitAudio.objects.get(id=id)
+    except ExtraitAudio.DoesNotExist:
+        return  HttpResponse("")
+
+    extraits_artistes.delete()
+    return redirect('extraits_artistes')

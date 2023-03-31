@@ -6,98 +6,101 @@
     <div class="container">
         <div class="row">
             <div class="col-md-11">
-                 <div class="card" style="width: 65rem;margin:10px ">
-                    <img src="{{ image_src }}" style="width:150px;"  alt="Card image cap">
+                <div class="card" style="width: 65rem;margin:10px ">
+                    <img src="{{ image_src }}" style="width:150px;" alt="Card image cap">
 
                     <div class="card-body">
-                      <h4>Informations personneles</h4>
-                      <div>{{ utilisateur.username }}</div>
+                        <h4>Informations personneles</h4>
+                        <div>{{ utilisateur.username }}</div>
                         <hr>
-                      <div>Nom : {{ utilisateur.first_name }}</div>
-                         <hr>
-                      <div>Prénom : {{ utilisateur.last_name }}</div>
+                        <div>Nom : {{ utilisateur.first_name }}</div>
+                        <hr>
+                        <div>Prénom : {{ utilisateur.last_name }}</div>
                     </div>
-                 </div>
+                </div>
 
             </div>
-            <div  class="col-md-1">
-                 <a href="{% url 'modifierInfoPerso' utilisateur.id %}"><img src="{% static 'crazymix/img/imgModifier.png' %}" style="width:40px;"></a>
+            <div class="col-md-1">
+                <a href="{% url 'modifierInfoPerso' utilisateur.id %}"><img
+                        src="{% static 'crazymix/img/imgModifier.png' %}" style="width:40px;"></a>
             </div>
         </div>
 
 
     </div>
 
-      <div class="container">
+    <div class="container">
         <div class="row">
             <div class="col-md-11">
-                 <div class="card" style="width: 65rem; margin:10px">
+                <div class="card" style="width: 65rem; margin:10px">
 
 
                     <div class="card-body">
-                     <h4>Me contacter</h4>
-                      <div>Adresse courriel : {{ utilisateur.email }}</div>
+                        <h4>Me contacter</h4>
+                        <div>Adresse courriel : {{ utilisateur.email }}</div>
                         <hr>
-                      <div>Téléphone : {{ utilisateur.telephone }}</div>
-                         <hr>
-                      <div>Instagram : {{ utilisateur.instagram }}</div>
+                        <div>Téléphone : {{ utilisateur.telephone }}</div>
+                        <hr>
+                        <div>Instagram : {{ utilisateur.instagram }}</div>
                         <hr>
                         <div>Spotify : {{ utilisateur.spotify }}</div>
                     </div>
-                 </div>
+                </div>
 
             </div>
-            <div  class="col-md-1">
-                 <a href="{% url 'modifierContact' utilisateur.id %}"><img src="{% static 'crazymix/img/imgModifier.png' %}" style="width:40px;"></a>
-            </div>
-        </div>
-
-     <div class="container">
-        <div class="row">
-            <div class="col-md-11">
-                 <div class="card" style="width: 65rem; margin-top:10px">
-
-
-                    <div class="card-body">
-                      <h4>Adresses et autres</h4>
-                      <div>Adresse : {{ utilisateur.adresse }}</div>
-                        <hr>
-                      <div>Code postal : {{ utilisateur.code_postal }}</div>
-                         <hr>
-                      <div>description : {{ utilisateur.description }}</div>
-                        <hr>
-                        <div>Role d'utilisateur : {{ utilisateur.role }}</div>
-                    </div>
-                 </div>
-
-            </div>
-            <div  class="col-md-1">
-                 <a href="{% url 'modifierAdresse' utilisateur.id %}"><img src="{% static 'crazymix/img/imgModifier.png' %}" style="width:40px;"></a>
+            <div class="col-md-1">
+                <a href="{% url 'modifierContact' utilisateur.id %}"><img
+                        src="{% static 'crazymix/img/imgModifier.png' %}" style="width:40px;"></a>
             </div>
         </div>
-         <div class="container">
+
+        <div class="container">
             <div class="row">
                 <div class="col-md-11">
-                     <div class="card" style="width: 65rem; margin-top:20px; margin-left:-11px;">
+                    <div class="card" style="width: 65rem; margin-top:10px">
 
 
                         <div class="card-body">
-                          <h4>Mot de passe</h4>
-                          <div> mot de passe : *******************</div>
+                            <h4>Adresses et autres</h4>
+                            <div>Adresse : {{ utilisateur.adresse }}</div>
                             <hr>
-
+                            <div>Code postal : {{ utilisateur.code_postal }}</div>
+                            <hr>
+                            <div>description : {{ utilisateur.description }}</div>
+                            <hr>
+                            <div>Role d'utilisateur : {{ utilisateur.role }}</div>
                         </div>
-                     </div>
+                    </div>
 
                 </div>
-                <div  class="col-md-1">
-                     <a href="{% url 'modifierMDP' utilisateur.id %}"><img src="{% static 'crazymix/img/imgModifier.png' %}" style="width:40px;"></a>
+                <div class="col-md-1">
+                    <a href="{% url 'modifierAdresse' utilisateur.id %}"><img
+                            src="{% static 'crazymix/img/imgModifier.png' %}" style="width:40px;"></a>
                 </div>
             </div>
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-11">
+                        <div class="card" style="width: 65rem; margin-top:20px; margin-left:-11px;">
 
 
+                            <div class="card-body">
+                                <h4>Mot de passe</h4>
+                                <div> mot de passe : *******************</div>
+                                <hr>
+
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="col-md-1">
+                        <a href="{% url 'modifierMDP' utilisateur.id %}"><img
+                                src="{% static 'crazymix/img/imgModifier.png' %}" style="width:40px;"></a>
+                    </div>
+                </div>
 
 
-
-
+            </div>
+        </div>
+    </div>
 {% endblock %}

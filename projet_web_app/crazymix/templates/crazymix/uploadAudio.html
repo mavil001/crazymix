@@ -1,0 +1,20 @@
+{% extends 'crazymix/base.html' %}
+{% load static %}
+{% block title %}{% endblock %}
+
+{% block contenu %}
+    <meta charset="UTF-8">
+ <h1>Upload d'extrait de musique</h1>
+    {% if file_url %}
+        <p>Le fichier a été téléchargé avec succès à l'adresse suivante : <a href="{{ file_url }}">{{ file_url }}</a></p>
+    {% endif %}
+    <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        <input type="file" name="uploadAudio">
+        <br>
+        <br>
+        <input type="submit" value="Upload">
+    </form>
+
+
+{% endblock %}

@@ -1,9 +1,11 @@
 import mongoengine
 from django.core.validators import RegexValidator
 from mongoengine import *
+from mongoengine import Document, fields
 import crazymix
 from django.contrib.auth.models import AbstractUser
-
+from django.core.files.storage import FileSystemStorage
+import subprocess,os
 ROLE = (('PROFESSIONNEL', 'Professionnel'),
         ('ARTISTE', 'Artiste'))
 STATUT=(('EN_ATTENTE', 'En attente'),
@@ -58,3 +60,23 @@ class Reservation(Document):
 class MyUser(AbstractUser):
     def __str__(self):
         return self.username
+
+class ExtraitAudio(Document):
+    utilisateur=ReferenceField(Utilisateur, reverse_delete_rule=mongoengine.CASCADE, required=True)
+    audio = fields.FileField()
+
+    # def save(self, *args, **kwargs):
+    #     super(ExtraitAudio, self).save(*args, **kwargs)
+    #
+    #     if self.audio and not self.extrait:
+    #         fss = FileSystemStorage()
+    #         audio_path = fss.path(self.audio.name)
+    #         extrait_path = os.path.splitext(audio_path)[0] + '_extrait.mp3'
+    #
+    #         subprocess.run(
+    #             ['ffmpeg', '-i', audio_path, '-ss', '00:00:30', '-t', '00:00:10', '-acodec', 'copy', extrait_path],
+    #             check=True)
+    #
+    #         with open(extrait_path, 'rb') as f:
+    #             self.audio.put(f, content_type='audio/mp3')
+    #             self.save()

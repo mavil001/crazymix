@@ -1,10 +1,30 @@
-{% extends 'crazymix/base.html' %}
-{% load static %}
-{% block title %}Crazymix-Extraits & Artistes{{ title }}{% endblock %}
-
+{% extends "../crazymix/base.html" %}
 {% block contenu %}
+    <h2 class="mb-4"></h2>
+    <ul class="messages">
+                        {% for message in messages %}
+                            <li {% if message.tags %} class="{{ message.tags }} text-danger"{% endif %}>{{ message }}</li>
+                        {% endfor %}
+                    </ul>
+
+    {% for x in extraits %}
+        <div class="row">
+              <audio class="col-4" controls >
+        <source src=" {{ x.audio }}">
+
+        </audio>
+            <a  class="btn btn-primary col-2 mb-5" href="{% url 'supprimerExtrait' x.id  %}">Supprimer extrait</a>
+        </div>
 
 
+    {% endfor %}
 
-
+     <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="upload">Sélectionner un fichier audio :</label>
+            <input type="file" name="uploadAudio" id="uploadAudio" accept="audio/*">
+        </div>
+        <button type="submit" class="btn btn-primary">Télécharger Extrait</button>
+    </form>
 {% endblock %}
