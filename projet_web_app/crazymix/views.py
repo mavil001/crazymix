@@ -293,33 +293,49 @@ def reservation(request,reservation_id=None):
 
 def sessions(request):
     utilisateur_id = request.session['utilisateur_id']
-
+    user=Utilisateur.objects.get(id=utilisateur_id)
     reservations=Reservation.objects.filter(user=utilisateur_id)
-    return render(request,'crazymix/sessions.html', {'title':"Mes sessions d'enregistrement","reservations":reservations})
+    if(len(reservations)==0):
+        reservations=None
+    return render(request,'crazymix/sessions.html', {'title':"Mes sessions d'enregistrement","reservations":reservations, 'user':user})
 
 
 def extraits_artistes(request):
-    utilisateur_id=request.session['utilisateur_id']
-    extraits=ExtraitAudio.objects.filter(utilisateur=utilisateur_id)
-    extraits_liste=[]
-    for x in extraits:
-
-        audio_proxy = x.audio
-        if audio_proxy:
-            audio_bytes = audio_proxy.read()
-            audio_data = base64.b64encode(audio_bytes).decode('utf-8')
-            audio_src = f"data:audio/mpeg;base64,{audio_data}"
-        else:
-            audio_src=None
-        extraits_liste.append({'audio':audio_src,'id':x.id})
-    if (request.method == "POST"):
-        audio = request.FILES.get('uploadAudio')
+    if 'is_authenticated' in request.session and request.session['is_authenticated']:
         utilisateur_id=request.session['utilisateur_id']
-        utilisateur=Utilisateur.objects.get(id=utilisateur_id)
-        extrait=ExtraitAudio(audio=audio,utilisateur=utilisateur)
-        extrait.save()
-    return render(request,'crazymix/extraits_artistes.html', {'title':'Exraits - Artistes','extraits':extraits_liste})
+        extraits=ExtraitAudio.objects.filter(utilisateur=utilisateur_id)
+        if (request.method == "POST"):
+            audio = request.FILES.get('uploadAudio')
+            utilisateur_id=request.session['utilisateur_id']
+            utilisateur=Utilisateur.objects.get(id=utilisateur_id)
+            extrait=ExtraitAudio(audio=audio,utilisateur=utilisateur, partage='PUBLIC')
+            extrait.save()
+        extraits_liste=[]
+        for x in extraits:
 
+            audio_proxy = x.audio
+            if audio_proxy:
+                audio_bytes = audio_proxy.read()
+                audio_data = base64.b64encode(audio_bytes).decode('utf-8')
+                audio_src = f"data:audio/mpeg;base64,{audio_data}"
+            else:
+                audio_src=None
+            extraits_liste.append({'audio':audio_src,'id':x.id, 'partage':x.partage})
+
+        return render(request,'crazymix/extraits_artistes.html', {'title':'Mes extraits','extraits':extraits_liste, 'utilisateur_id':utilisateur_id})
+    else:
+        return redirect('login')
+
+def modifierPartage(request, extrait_id : str):
+    extrait = ExtraitAudio.objects.get(id=extrait_id)
+    if(extrait.partage=='PUBLIC'):
+        extrait.partage='COMMUNAUTE'
+    elif(extrait.partage=='COMMUNAUTE'):
+        extrait.partage='PERSONNEL'
+    elif(extrait.partage=='PERSONNEL'):
+        extrait.partage='PUBLIC'
+    extrait.save()
+    return redirect('extraits_artistes')
 
 def connexion(request):
     return render(request, 'crazymix/connexion.html', {'title': 'Se connecter'})
@@ -595,6 +611,15 @@ def annulerReservation(request,reservation_id):
     reservation.delete()
     return redirect('sessions')
 
+def validerReservation(request,reservation_id):
+    utilisateur_id = request.session['utilisateur_id']
+    try:
+        reservation=Reservation.objects.get(id=reservation_id)
+    except Reservation.DoesNotExist:
+        return  HttpResponse("Reservation n'existe pas")
+    reservation.statut='VALIDE'
+    reservation.save()
+    return redirect('sessions')
 
 def supprimerExtrait(request,id):
     utilisateur_id = request.session['utilisateur_id']

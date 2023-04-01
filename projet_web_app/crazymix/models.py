@@ -11,6 +11,9 @@ ROLE = (('PROFESSIONNEL', 'Professionnel'),
 STATUT=(('EN_ATTENTE', 'En attente'),
         ('VALIDE', 'Validé'),
         ('COMPLETE', 'Complété'))
+NIVEAU_PARTAGE=(('PUBLIC', 'Public'),
+                ('COMMUNAUTE', 'Communauté'),
+                ('PERSONNEL', 'Personnel'))
 
 def _not_empty(val):
     if not val:
@@ -64,7 +67,7 @@ class MyUser(AbstractUser):
 class ExtraitAudio(Document):
     utilisateur=ReferenceField(Utilisateur, reverse_delete_rule=mongoengine.CASCADE, required=True)
     audio = fields.FileField()
-
+    partage =StringField(choices=NIVEAU_PARTAGE, required=True, validation=_not_empty, default=NIVEAU_PARTAGE[0])
     # def save(self, *args, **kwargs):
     #     super(ExtraitAudio, self).save(*args, **kwargs)
     #

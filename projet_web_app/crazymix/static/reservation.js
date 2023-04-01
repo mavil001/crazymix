@@ -34,6 +34,7 @@ async function makeRequest(url, method, body) {
     })
 }
 
+
 async function getOtherWeek(direction) {
     inputDirection=document.getElementsByName('direction')
     inputDirection[0].setAttribute('value', direction);

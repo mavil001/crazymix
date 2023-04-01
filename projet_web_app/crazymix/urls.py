@@ -7,6 +7,7 @@ urlpatterns = [
     # path('reservation/new', AjaxHandler.as_view()),
     path('reservation/new', views.reservation, name="reservation"),
     path('reservation/<reservation_id>', views.reservation, name="reservationModif"),
+    path('modifierPartage/<extrait_id>', views.modifierPartage, name="modifierPartage"),
     path('sessions/', views.sessions, name="sessions"),
     path('extraits_artistes/', views.extraits_artistes, name="extraits_artistes"),
     path('connexion/', views.connexion, name="connexion"),
@@ -22,5 +23,6 @@ urlpatterns = [
     path("modifierAdresse/<str:id>", views.modifierAdresse, name="modifierAdresse"),
     path("modifierMDP/<str:id>", views.modifierMDP, name="modifierMDP"),
     path("annulerReservation/<reservation_id>",views.annulerReservation,name="annulerReservation"),
+    path("validerReservation/<reservation_id>",views.validerReservation,name="validerReservation"),
     path("supprimerExtrait/<id>", views.supprimerExtrait, name="supprimerExtrait")
 ]

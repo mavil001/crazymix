@@ -30,7 +30,7 @@ class RegisterForm(forms.Form):
                                     widget=forms.TextInput(attrs={'class': 'form-control col-4'}))
         password= forms.CharField(required=True, label='Mot de passe',
                                     widget=forms.PasswordInput(attrs={'class': 'form-control col-4'}))
-        password1=forms.CharField(required=True, label='confirmation mot de passe',
+        password1=forms.CharField(required=True, label='Confirmation mot de passe',
                                     widget=forms.PasswordInput(attrs={'class': 'form-control col-4'}))
         email = forms.EmailField(required=True, label='Adresse éléctronique', widget=forms.EmailInput(
             attrs={'class': 'form-control col-4', 'placeholder': 'user@gmail.com'}))
@@ -47,9 +47,9 @@ class RegisterForm(forms.Form):
         avatar = forms.ImageField(label='Avatar',
                                   widget=forms.ClearableFileInput(attrs={'class': 'form-control col-4'}))
         spotify= forms.CharField(required=False,label='Spotify',
-                                     widget=forms.TextInput(attrs={'class': 'form-control col-4', 'placeholder':'facultatif'}))
+                                     widget=forms.TextInput(attrs={'class': 'form-control col-4', 'placeholder':'Facultatif'}))
         instagram = forms.CharField( required=False,label='Instagram',
-                                  widget=forms.TextInput(attrs={'class': 'form-control col-4','placeholder':'facultatif'}))
+                                  widget=forms.TextInput(attrs={'class': 'form-control col-4','placeholder':'Facultatif'}))
         description = forms.CharField(required=True, label='Description',
                                   widget=forms.Textarea(attrs={'class': 'form-control col-4'}))
         role= forms.ChoiceField(required=True,choices=ROLE, widget=forms.Select)
@@ -79,10 +79,10 @@ class ModifierProfilForm(forms.Form):
                               widget=forms.ClearableFileInput(attrs={'class': 'form-control col-4'}))
     spotify = forms.CharField(required=False, label='Spotify',
                               widget=forms.TextInput(
-                                  attrs={'class': 'form-control col-4', 'placeholder': 'facultatif'}))
+                                  attrs={'class': 'form-control col-4', 'placeholder': 'Facultatif'}))
     instagram = forms.CharField(required=False, label='Instagram',
                                 widget=forms.TextInput(
-                                    attrs={'class': 'form-control col-4', 'placeholder': 'facultatif'}))
+                                    attrs={'class': 'form-control col-4', 'placeholder': 'Facultatif'}))
     description = forms.CharField(required=True, label='Description',
                                   widget=forms.Textarea(attrs={'class': 'form-control col-4'}))
     role = forms.ChoiceField(required=True, choices=ROLE, widget=forms.Select)
@@ -136,10 +136,10 @@ class ModifierContactForm(forms.Form):
                                 widget=forms.TextInput(attrs={'class': 'form-control col-4'}))
     spotify = forms.CharField(required=False, label='Spotify',
                               widget=forms.TextInput(
-                                  attrs={'class': 'form-control col-4', 'placeholder': 'facultatif'}))
+                                  attrs={'class': 'form-control col-4', 'placeholder': 'Facultatif'}))
     instagram = forms.CharField(required=False, label='Instagram',
                                 widget=forms.TextInput(
-                                    attrs={'class': 'form-control col-4', 'placeholder': 'facultatif'}))
+                                    attrs={'class': 'form-control col-4', 'placeholder': 'Facultatif'}))
 
     def __init__(self, *args, **kwargs):
         instance = kwargs.pop('instance', None)

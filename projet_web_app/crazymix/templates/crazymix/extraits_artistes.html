@@ -1,30 +1,66 @@
 {% extends "../crazymix/base.html" %}
+{% load static %}
 {% block contenu %}
     <h2 class="mb-4"></h2>
     <ul class="messages">
-                        {% for message in messages %}
-                            <li {% if message.tags %} class="{{ message.tags }} text-danger"{% endif %}>{{ message }}</li>
-                        {% endfor %}
-                    </ul>
+        {% for message in messages %}
+            <li {% if message.tags %} class="{{ message.tags }} text-danger"{% endif %}>{{ message }}</li>
+        {% endfor %}
+    </ul>
+    <div class="d-flex justify-content-between mt-5">
+        {#        <div  >#}
+        <div style="width:-webkit-fill-available">
+            {% for x in extraits %}
+                <div class="row">
+                    <div>
+                        {% if x.partage == 'PUBLIC' %}
+                            <a class="col-1 mt-2" href="{% url 'modifierPartage' x.id %}"><img class="rounded-pill"
+                                                                src="{% static 'crazymix/img/public.png' %}"
+                                                                style="Width:30px;"/></a>
+                            <p class="text-center">Public</p>
 
-    {% for x in extraits %}
-        <div class="row">
-              <audio class="col-4" controls >
-        <source src=" {{ x.audio }}">
+                        {% elif x.partage == 'PERSONNEL' %}
+                            <a class="col-1 mt-2" href="{% url 'modifierPartage' x.id %}"><img class="rounded-pill"
+                                                                src="{% static 'crazymix/img/private.png' %}"
+                                                                style="Width:30px;"/></a>
+                            <p class="text-center">Privé</p>
+                        {% elif x.partage == 'COMMUNAUTE' %}
+                            <a class="col-1 mt-2" href="{% url 'modifierPartage' x.id %}"><img class="rounded-pill"
+                                                                src="{% static 'crazymix/img/community.png' %}"
+                                                                style="Width:30px;"/></a>
+                            <p class="text-center">Artistes</p>
+                        {% endif %}
 
-        </audio>
-            <a  class="btn btn-primary col-2 mb-5" href="{% url 'supprimerExtrait' x.id  %}">Supprimer extrait</a>
+
+                    </div>
+
+                    <audio class="col-9" controls>
+                        <source src=" {{ x.audio }}">
+
+                    </audio>
+                    <a class="col-1 mt-2" href="{% url 'supprimerExtrait' x.id %}"><img
+                            src="{% static 'crazymix/img/corbeille.png' %}"
+                            style="Width:20px;"/></a>
+                    {##}
+                    {#                    <a class="btn btn-primary col-3 mb-5" href="{% url 'supprimerExtrait' x.id %}">Supprimer#}
+                    {#                        l'extrait</a>#}
+                </div>
+                <div class="mt-5"></div>
+            {% endfor %}
         </div>
 
-
-    {% endfor %}
-
-     <form method="POST" enctype="multipart/form-data">
-        {% csrf_token %}
-        <div class="form-group">
-            <label for="upload">Sélectionner un fichier audio :</label>
-            <input type="file" name="uploadAudio" id="uploadAudio" accept="audio/*">
+        <div>
+            <div class="card pb-5 pr-4 pl-3 pt-3">
+                <h4 class="mb-3">Télécharger un nouvel extrait</h4>
+                <form method="POST" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class="form-group mb-5">
+                        <label class="mb-3" for="upload">Sélectionner un fichier audio :</label>
+                        <input type="file" name="uploadAudio" id="uploadAudio" accept="audio/*">
+                    </div>
+                    <button type="submit" class="btn btn-primary">Télécharger l'extrait</button>
+                </form>
+            </div>
         </div>
-        <button type="submit" class="btn btn-primary">Télécharger Extrait</button>
-    </form>
+    </div>
 {% endblock %}
