@@ -306,7 +306,7 @@ def validersessions(request):
         reservations=Reservation.objects.filter(statut="EN_ATTENTE")
         if(len(reservations)==0):
             reservations=None
-        return render(request,'crazymix/validerSessions.html', {'title':"Mes sessions d'enregistrement","reservations":reservations, 'user':user})
+        return render(request,'crazymix/validerSessions.html', {'title':"Validation de sessions","reservations":reservations, 'user':user})
     else:
         return redirect("index")
 def extraits_artistes(request):

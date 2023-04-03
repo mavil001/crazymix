@@ -39,17 +39,20 @@
                     {% else %}
                         <td>Validé</td>
                     {% endif %}
+
+
                     <td>
                         {% if user.role == 'PROFESSIONNEL' and x.statut == 'EN_ATTENTE' %}
                             <a class="btn-success btn"
                                href="{% url 'validerReservation' x.id %}">Valider</a>
-                        {% elif user.role == 'ARTISTE' %}
+                        {% elif user.role == 'ARTISTE' and x.statut != 'VALIDE' %}
                             <a class="btn-primary btn"
                                href="{% url 'reservationModif' x.id %}">Modifier</a>
                         {% endif %}
                         <a class="text-danger btn"
                            href="{% url 'annulerReservation' x.id %}">Annuler</a>
                     </td>
+
                 </tr>
             {% endfor %}
             </tbody>

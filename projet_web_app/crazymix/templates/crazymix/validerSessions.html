@@ -9,6 +9,7 @@
             <li {% if message.tags %} class="{{ message.tags }} text-success"{% endif %}>{{ message }}</li>
         {% endfor %}
     </ul>
+
     {% if reservations is None %}
   <a class="btn btn-light d-table mt-5 mx-auto" href="/crazymix/reservation/new">Réserver ma session au
                 studio</a>
@@ -43,7 +44,7 @@
                         {% if user.role == 'PROFESSIONNEL' and x.statut == 'EN_ATTENTE' %}
                             <a class="btn-success btn"
                                href="{% url 'validerReservation' x.id %}">Valider</a>
-                       
+
                         {% endif %}
                         <a class="text-danger btn"
                            href="{% url 'annulerReservation' x.id %}">Annuler</a>
