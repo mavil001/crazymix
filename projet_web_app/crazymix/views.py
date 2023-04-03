@@ -299,7 +299,16 @@ def sessions(request):
         reservations=None
     return render(request,'crazymix/sessions.html', {'title':"Mes sessions d'enregistrement","reservations":reservations, 'user':user})
 
-
+def validersessions(request):
+    utilisateur_id = request.session['utilisateur_id']
+    user=Utilisateur.objects.get(id=utilisateur_id)
+    if(user.role=="PROFESSIONNEL"):
+        reservations=Reservation.objects.filter(statut="EN_ATTENTE")
+        if(len(reservations)==0):
+            reservations=None
+        return render(request,'crazymix/validerSessions.html', {'title':"Mes sessions d'enregistrement","reservations":reservations, 'user':user})
+    else:
+        return redirect("index")
 def extraits_artistes(request):
     if 'is_authenticated' in request.session and request.session['is_authenticated']:
         utilisateur_id=request.session['utilisateur_id']
@@ -404,7 +413,8 @@ def login(request):
                 if check_password(password, utilisateur.password):
                     request.session['utilisateur_id'] = utilisateur.id
                     request.session['is_authenticated'] = True
-
+                    if utilisateur.role=='PROFESSIONNEL':
+                        request.session['professionnel'] =True
                     return redirect('compte')
     else:
         # user=User(username='admin',password= make_password('12345qwe!'))

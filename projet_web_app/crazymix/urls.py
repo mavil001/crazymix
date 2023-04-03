@@ -24,5 +24,6 @@ urlpatterns = [
     path("modifierMDP/<str:id>", views.modifierMDP, name="modifierMDP"),
     path("annulerReservation/<reservation_id>",views.annulerReservation,name="annulerReservation"),
     path("validerReservation/<reservation_id>",views.validerReservation,name="validerReservation"),
-    path("supprimerExtrait/<id>", views.supprimerExtrait, name="supprimerExtrait")
+    path("supprimerExtrait/<id>", views.supprimerExtrait, name="supprimerExtrait"),
+    path("validersessions/", views.validersessions, name="validersessions")
 ]

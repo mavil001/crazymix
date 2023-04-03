@@ -1,0 +1,66 @@
+{% extends 'crazymix/base.html' %}
+{% load static %}
+{% block title %}Crazymix-Mes sessions{% endblock %}
+
+{% block contenu %}
+
+    <ul class="messages">
+        {% for message in messages %}
+            <li {% if message.tags %} class="{{ message.tags }} text-success"{% endif %}>{{ message }}</li>
+        {% endfor %}
+    </ul>
+    {% if reservations is None %}
+  <a class="btn btn-light d-table mt-5 mx-auto" href="/crazymix/reservation/new">Réserver ma session au
+                studio</a>
+    {% else %}
+        <table class="table table-dark mt-5">
+            <thead>
+            <tr>
+                <th scope="col">Date de planification</th>
+                {% if user.role == 'PROFESSIONNEL' %}
+                    <th scope="col">Artiste</th>
+                {% endif %}
+                <th scope="col">État</th>
+                <th scope="col">Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for x in reservations %}
+                <tr>
+                    <th scope="row">{{ x.debut }}-{{ x.fin.hour }}:{{ x.fin.minute }}{% if x.fin.minute == 0 %}
+                        0{% endif %}</th>
+                    {% if user.role == 'PROFESSIONNEL' %}
+                        <th scope="row">{{ x.user.first_name }} {{ x.user.last_name }}</th>
+
+                    {% endif %}
+
+                    {% if x.statut == 'EN_ATTENTE' %}
+                        <td>En attente</td>
+                    {% else %}
+                        <td>Validé</td>
+                    {% endif %}
+                    <td>
+                        {% if user.role == 'PROFESSIONNEL' and x.statut == 'EN_ATTENTE' %}
+                            <a class="btn-success btn"
+                               href="{% url 'validerReservation' x.id %}">Valider</a>
+                       
+                        {% endif %}
+                        <a class="text-danger btn"
+                           href="{% url 'annulerReservation' x.id %}">Annuler</a>
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
+    {#    {% for x in reservations %}#}
+    {#        <div class="row m-5">#}
+    {#            <div class="col-4">{{ x.debut }}-{{ x.fin }}</div>#}
+    {#            <div class="col-6"><a class="btn btn-primary " href="{% url 'reservationModif' x.id %}">Modifier</a>#}
+    {##}
+    {#                <a class="btn btn-primary" href="{% url 'annulerReservation' x.id %}">Annuler</a></div>#}
+    {#        </div>#}
+    {#    {% endfor %}#}
+
+
+{% endblock %}

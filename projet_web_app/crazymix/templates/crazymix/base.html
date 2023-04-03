@@ -38,6 +38,9 @@
                     <div class="dropdown-menu " aria-labelledby="dropdownMenuButton">
                         <a class="dropdown-item" href="/crazymix/reservation/new">Réserver une session </a>
                         <a class="dropdown-item" href="{% url 'sessions' %}">Voir mes sessions</a>
+                        {% if 'professionnel' in request.session %}
+                            <a class="dropdown-item" href="{% url 'validersessions' %}">Valider les sessions</a>
+                        {% endif %}
                     </div>
                 </div>
             </li>
