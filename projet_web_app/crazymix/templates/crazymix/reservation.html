@@ -46,8 +46,8 @@
                             <td class="text-center align-middle">
                                 {% if heure.hDebut in jour.indisponibilites %}
                                     <div style="height:100%;width:100%" class="text-secondary px-2">
-                                                {{ heure.hDebut }}:00 - {{ heure.hFin }}:00
-                                            </div>
+                                        {{ heure.hDebut }}:00 - {{ heure.hFin }}:00
+                                    </div>
 
                                 {% elif jour.classe is None %}
                                     {% if jour.date == today.date and isThisWeek %}
@@ -85,16 +85,9 @@
 
             {% csrf_token %}
             <div class="d-flex justify-content-end">
-
-                {#                    <a onclick="bookReservation(this)" class="btn btn-secondary ml-2 btn-lg mb-5" type="submit">Réserver#}
-                {#                        <span#}
-                {#                                class="badge badge-light"></span></a>#}
-                <button type="submit" class="btn btn-secondary ml-2 btn-lg mb-5">Réserver
+                <button type="submit" disabled = true id='submit' class="btn btn-secondary ml-2 btn-lg mb-5">Réserver
                     <span
                             class="badge badge-light"></span></button>
-                {#                       <button type="submit" class="btn btn-secondary ml-2 btn-lg mb-5">Réserver#}
-                {#                        <span#}
-                {#                                 class="badge badge-light"></span></button>#}
             </div>
         </div>
         <a href="#" id="next" onclick="getOtherWeek('next')"><img class="ml-3"

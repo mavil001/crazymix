@@ -34,7 +34,16 @@ async function makeRequest(url, method, body) {
     })
 }
 
+window.addEventListener("load", (event) => {
+  input=document.getElementById('id_username')
+    if(input){
+        input.addEventListener('mouseleave', validerUsername())
+    }
+});
 
+async function validerUsername(){
+    let ici=''
+}
 async function getOtherWeek(direction) {
     inputDirection=document.getElementsByName('direction')
     inputDirection[0].setAttribute('value', direction);
@@ -143,14 +152,19 @@ async function selectSchedule(e) {
     }
     //ajoute le contenu de la réservation dans le bouton de soumission
     var button = document.getElementsByClassName('badge badge-light');
+    var btnSubmit=document.getElementById('submit')
     var input= document.getElementsByName('reservation');
     if (schedulesSelected.length != 0) {
         var reservationFormat=date + ' de ' + schedulesSelected[0].hDebut + '-' + schedulesSelected[schedulesSelected.length - 1].hFin;
         button[0].innerText = reservationFormat;
         input[0].setAttribute('value', reservationFormat);
+        btnSubmit.disabled= false
+
     } else {
+
         button[0].innerText = ""
         input[0].value="";
+        btnSubmit.disabled= true
     }
 }
 

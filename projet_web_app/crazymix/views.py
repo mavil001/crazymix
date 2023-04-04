@@ -405,8 +405,10 @@ def login(request):
             # user = authenticate(request, username=username, password=password)
             # si la liste n'est pas vide donc il a trouvé un user avec le username et le pwd'
             if utilisateur is None:
+                messages.add_message(request, messages.INFO, "Le nom d'utilisateur et/ou le mot de passe n'est pas valide")
 
-                return redirect('login')
+                form.password = ""
+                # return redirect('login')
                 # return render(request, 'registration/login.html', {'form': form})
             else:
 
@@ -503,12 +505,12 @@ def validateReservation(dateTimeDebut, dateTimeFin):
 def modifierProfil(request, id: str):
     utilisateur = Utilisateur.objects.get(id=id)
     if request.method == 'POST':
-        idUser = request.POST.get('id')
+        # idUser = request.POST.get('id')
         # form = ModifierProfilForm(request.POST, request.FILES,instance=None)
 
         # idUser= form.cleaned_data['id']
-        utilisateur = Utilisateur.objects.get(id=idUser)
-
+        # utilisateur = Utilisateur.objects.get(id=idUser)
+        form=ModifierProfilForm(request.POST, instance=utilisateur)
         utilisateur.last_name = request.POST.get('last_name')
         utilisateur.first_name = request.POST.get('first_name')
         utilisateur.email = request.POST.get('email')
@@ -521,80 +523,85 @@ def modifierProfil(request, id: str):
         utilisateur.description = request.POST.get('description')
         utilisateur.role = request.POST.get('role')
 
-        # if form.is_valid():
-
-        # form = ModifierProfilForm(request.POST, instance=utilisateur)
-
-        #     form.save()
-        utilisateur.save()
-        # messages.success(request, 'Votre profil a été modifié avec succès.')
-
-        return redirect('compte')
+        if form.is_valid() or len(form.errors)==1:
+            utilisateur.save()
+            messages.add_message(request, messages.INFO, "Modification effectuée avec succès")
+            return redirect('compte')
     else:
         utilisateur = Utilisateur.objects.get(id=id)
         form = ModifierProfilForm(instance=utilisateur)
-        return render(request, 'crazymix/modifierProfil.html', {'form': form})
+    return render(request, 'crazymix/modifierProfil.html', {'form': form})
 
 
 def modifierContact(request, id: str):
     utilisateur = Utilisateur.objects.get(id=id)
     if request.method == 'POST':
-        idUser = request.POST.get('id')
-        utilisateur = Utilisateur.objects.get(id=idUser)
+        form=ModifierContactForm(request.POST, instance=utilisateur)
+        # idUser = request.POST.get('id')
+        # utilisateur = Utilisateur.objects.get(id=idUser)
         utilisateur.email = request.POST.get('email')
         utilisateur.telephone = request.POST.get('telephone')
         utilisateur.spotify = request.POST.get('spotify')
         utilisateur.instagram = request.POST.get('instagram')
-        utilisateur.save()
-        # messages.success(request, 'Votre profil a été modifié avec succès.')
-        return redirect('compte')
+        if form.is_valid() or len(form.errors) == 1:
+            utilisateur.save()
+            messages.add_message(request, messages.INFO, "Modification effectuée avec succès")
+            return redirect('compte')
     else:
         utilisateur = Utilisateur.objects.get(id=id)
         form = ModifierContactForm(instance=utilisateur)
-        return render(request, 'crazymix/modifierInfoPerso.html', {'form': form})
+    return render(request, 'crazymix/modifierInfoPerso.html', {'form': form})
 
 
 def modifierInfoPerso(request, id: str):
     utilisateur = Utilisateur.objects.get(id=id)
     if request.method == 'POST':
-        idUser = request.POST.get('id')
-        utilisateur = Utilisateur.objects.get(id=idUser)
+        # idUser = request.POST.get('id')
+        # utilisateur = Utilisateur.objects.get(id=idUser)
+        form=ModifierInfoPersoForm(request.POST, instance=utilisateur)
         if request.FILES.get('avatar') is not None:
             utilisateur.avatar = request.FILES.get('avatar')
         utilisateur.last_name = request.POST.get('last_name')
         utilisateur.first_name = request.POST.get('first_name')
-        utilisateur.save()
-        # messages.success(request, 'Votre profil a été modifié avec succès.')
-        return redirect('compte')
+        if form.is_valid() or len(form.errors) == 1:
+            utilisateur.save()
+            messages.add_message(request, messages.INFO, "Modification effectuée avec succès")
+            return redirect('compte')
     else:
         utilisateur = Utilisateur.objects.get(id=id)
         form = ModifierInfoPersoForm(instance=utilisateur)
-        return render(request, 'crazymix/modifierContact.html', {'form': form})
+    return render(request, 'crazymix/modifierContact.html', {'form': form})
 
 
 def modifierAdresse(request, id: str):
     utilisateur = Utilisateur.objects.get(id=id)
     if request.method == 'POST':
-        idUser = request.POST.get('id')
-        utilisateur = Utilisateur.objects.get(id=idUser)
+        form = ModifierAdresseForm(data=request.POST, instance=utilisateur)
+        # idUser = request.POST.get('id')
+        # utilisateur = Utilisateur.objects.get(id=idUser)
         utilisateur.adresse = request.POST.get('adresse')
         utilisateur.code_postal = request.POST.get('code_postal')
         utilisateur.description = request.POST.get('description')
         utilisateur.role = request.POST.get('role')
-        utilisateur.save()
-        # messages.success(request, 'Votre profil a été modifié avec succès.')
-        return redirect('compte')
+
+        if form.is_valid() or len(form.errors) == 1:
+            utilisateur.save()
+            messages.add_message(request, messages.INFO, "Modification effectuée avec succès")
+            return redirect('compte')
+
     else:
         utilisateur = Utilisateur.objects.get(id=id)
         form = ModifierAdresseForm(instance=utilisateur)
-        return render(request, 'crazymix/modifierContact.html', {'form': form})
+    return render(request, 'crazymix/modifierContact.html', {'form': form})
 
 
 def modifierMDP(request, id: str):
     utilisateur = Utilisateur.objects.get(id=id)
     if request.method == 'POST':
-        idUser = request.POST.get('id')
-        utilisateur = Utilisateur.objects.get(id=idUser)
+        form = ModifierMdpForm(request.POST, instance=utilisateur)
+
+        # idUser = request.POST.get('id')
+        # utilisateur = Utilisateur.objects.get(id=idUser)
         password = request.POST.get('ancienMdp')
 
         ancienMdp = utilisateur.password
@@ -603,13 +610,14 @@ def modifierMDP(request, id: str):
         if check_password(password, ancienMdp):
             if (nouveaumotpasse == confirmatioMdp):
                 utilisateur.password = make_password(nouveaumotpasse)
-        utilisateur.save()
-        # messages.success(request, 'Votre profil a été modifié avec succès.')
-        return redirect('compte')
+        if form.is_valid() or len(form.errors) == 1:
+            utilisateur.save()
+            messages.add_message(request, messages.INFO, "Modification effectuée avec succès")
+            return redirect('compte')
     else:
         utilisateur = Utilisateur.objects.get(id=id)
         form = ModifierMdpForm(instance=utilisateur)
-        return render(request, 'crazymix/modifierMDP.html', {'form': form})
+    return render(request, 'crazymix/modifierMDP.html', {'form': form})
 
 
 def annulerReservation(request,reservation_id):
