@@ -1,5 +1,4 @@
-let schedulesSelected = []
-
+let premiereEntree=true
 async function makeRequest(url, method, body) {
     let headers = {
         'X-Requested-With': 'XMLHttpRequest',
@@ -9,43 +8,55 @@ async function makeRequest(url, method, body) {
         const csrf = document.querySelector('[name=csrfmiddlewaretoken]').value
         headers['X-CSRFToken'] = csrf
     }
-    // let response = await fetch(url, {
-    //     method: method,
-    //     headers: headers,
-    //     body: body
-    // })
+
     fetch(url, {
         method: method,
         // credentials:'same-origin',
         headers: headers,
         body: body
     }).then(response => {
-        // if(response.status==200){
-        //         this.completeReservation(response.json());
-        //
-        // }
-
         return response.json()
     }).then(data => {
         data = data;
-        if(data['Success']){
+        if (data['Success']) {
             makeRequest('/crazymix/sessions', 'get')
+        } else if (data['valid'] == 'invalid') {
+            error = document.getElementById("invalid_username")
+            error.classList.remove('invisible')
+            error.innerText = "Nom d'utilisateur inexistant"
+        } else if (data['valid'] == 'valid') {
+            error = document.getElementById("invalid_username")
+            error.classList.add('invisible')
+            // error.setAttribute('visible', "visible")
+            // error.innerText = "Nom d'utilisateur inexistant"
         }
     })
 }
 
 window.addEventListener("load", (event) => {
-  input=document.getElementById('id_username')
-    if(input){
-        input.addEventListener('mouseleave', validerUsername())
+    input = document.getElementById('id_username')
+    if (input) {
+        input.addEventListener('focusout', validerUsername, true)
+        input.addEventListener('input', validerUsername, true)
     }
 });
 
-async function validerUsername(){
-    let ici=''
+async function validerUsername(e) {
+    error = document.getElementById("invalid_username")
+    if (e.type=='focusout' || e.type=='input' && !premiereEntree){
+        if(e.type=='focusout'){
+            premiereEntree=false;
+        }
+        input = document.getElementById('id_username')
+        let body = JSON.stringify({'username': input.value})
+        let data = await makeRequest('/crazymix/valider_username/', 'post', body)
+        if (data) {
+        }
+    }
 }
+
 async function getOtherWeek(direction) {
-    inputDirection=document.getElementsByName('direction')
+    inputDirection = document.getElementsByName('direction')
     inputDirection[0].setAttribute('value', direction);
 
     // dateIndicator=document.getElementsByName('dateIndicator')
@@ -152,19 +163,19 @@ async function selectSchedule(e) {
     }
     //ajoute le contenu de la réservation dans le bouton de soumission
     var button = document.getElementsByClassName('badge badge-light');
-    var btnSubmit=document.getElementById('submit')
-    var input= document.getElementsByName('reservation');
+    var btnSubmit = document.getElementById('submit')
+    var input = document.getElementsByName('reservation');
     if (schedulesSelected.length != 0) {
-        var reservationFormat=date + ' de ' + schedulesSelected[0].hDebut + '-' + schedulesSelected[schedulesSelected.length - 1].hFin;
+        var reservationFormat = date + ' de ' + schedulesSelected[0].hDebut + '-' + schedulesSelected[schedulesSelected.length - 1].hFin;
         button[0].innerText = reservationFormat;
         input[0].setAttribute('value', reservationFormat);
-        btnSubmit.disabled= false
+        btnSubmit.disabled = false
 
     } else {
 
         button[0].innerText = ""
-        input[0].value="";
-        btnSubmit.disabled= true
+        input[0].value = "";
+        btnSubmit.disabled = true
     }
 }
 
