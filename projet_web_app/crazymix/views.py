@@ -21,12 +21,28 @@ from django.views.generic import View
 from django.http import JsonResponse
 import json
 from .models import STATUT
-
+from django.db.models import Q
 
 # Create your views here.
 
 def index(request):
-    return render(request, 'crazymix/index.html', {'title': 'CrazyMix - Studio'})
+    extraits_public=ExtraitAudio.objects.all()
+    print(extraits_public)
+    extraits_liste = []
+    for x in extraits_public:
+
+        audio_proxy = x.audio
+        if audio_proxy:
+            audio_bytes = audio_proxy.read()
+            audio_data = base64.b64encode(audio_bytes).decode('utf-8')
+            audio_src = f"data:audio/mpeg;base64,{audio_data}"
+        else:
+            audio_src = None
+        extraits_liste.append({'audio': audio_src, 'id': x.id, 'partage': x.partage, 'nom':x.nom})
+
+    return render(request,'crazymix/index.html',{'title':'Extraits disponibles',
+                   'extraits_public': extraits_liste})
+    # return render(request, 'crazymix/index.html', {'title': 'CrazyMix - Studio'})
 
 
 def bookSession(request, reservation_id=None):
@@ -313,12 +329,26 @@ def extraits_artistes(request):
     if 'is_authenticated' in request.session and request.session['is_authenticated']:
         utilisateur_id=request.session['utilisateur_id']
         extraits=ExtraitAudio.objects.filter(utilisateur=utilisateur_id)
+
+        extrait=None
+        partage='PUBLIC'
         if (request.method == "POST"):
             audio = request.FILES.get('uploadAudio')
             utilisateur_id=request.session['utilisateur_id']
             utilisateur=Utilisateur.objects.get(id=utilisateur_id)
-            extrait=ExtraitAudio(audio=audio,utilisateur=utilisateur, partage='PUBLIC')
+            nom=request.POST.get('nom')
+            public=request.POST.get('public')
+            communaute=request.POST.get('communaute')
+            personnel=request.POST.get('personnel')
+            partage=request.POST.get('partage')
+            if partage == 'PUBLIC':
+                extrait=ExtraitAudio(audio=audio,utilisateur=utilisateur, partage='PUBLIC',nom=nom)
+            elif partage == 'COMMUNAUTE':
+                extrait = ExtraitAudio(audio=audio, utilisateur=utilisateur, partage='COMMUNAUTE',nom=nom)
+            elif partage == 'PERSONNEL':
+                extrait = ExtraitAudio(audio=audio, utilisateur=utilisateur, partage='PERSONNEL',nom=nom)
             extrait.save()
+            return redirect('extraits_artistes')
         extraits_liste=[]
         for x in extraits:
 
@@ -329,7 +359,7 @@ def extraits_artistes(request):
                 audio_src = f"data:audio/mpeg;base64,{audio_data}"
             else:
                 audio_src=None
-            extraits_liste.append({'audio':audio_src,'id':x.id, 'partage':x.partage})
+            extraits_liste.append({'audio':audio_src,'id':x.id, 'partage':x.partage,'nom':x.nom})
 
         return render(request,'crazymix/extraits_artistes.html', {'title':'Mes extraits','extraits':extraits_liste, 'utilisateur_id':utilisateur_id})
     else:
@@ -343,6 +373,13 @@ def modifierPartage(request, extrait_id : str):
         extrait.partage='PERSONNEL'
     elif(extrait.partage=='PERSONNEL'):
         extrait.partage='PUBLIC'
+
+    if request.POST.get('public'):
+        extrait.partage='PUBLIC'
+    elif request.POST.get('communaute'):
+        extrait.partage = 'COMMUNAUTE'
+    elif request.POST.get('personnel'):
+        extrait.partage = 'Pesonnel'
     extrait.save()
     return redirect('extraits_artistes')
 

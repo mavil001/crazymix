@@ -6,9 +6,46 @@
     {% block contenu %}
 
         <a class="btn btn-light d-table mt-5 mx-auto" href="{% url 'register' %}">M'inscrire</a>
-        {% if 'is_authenticated' in request.session %}
-            <a class="btn btn-light d-table mt-5 mx-auto" href="/crazymix/reservation/new">Réserver ma session au
-                studio</a>
-        {% endif %}
+
+             {% if 'is_authenticated' in request.session %}
+                 <a class="btn btn-light d-table mt-5 mx-auto" href="/crazymix/reservation/new">Réserver ma session au
+                                        studio</a>
+            {% endif %}
+                {% if extraits_public %}
+
+                    {% for extrait in extraits_public %}
+                        {% if extrait.partage == 'PUBLIC'  %}
+                         <div class="row">
+                             <div class="col-md-4-3">
+                            <div class="card-body">
+                                <h4>{{ extrait.nom }}</h4>
+                                <audio controls>
+                                    <source src="{{ extrait.audio }}" type="audio/mpeg">
+                                </audio>
+                            </div>
+
+                        </div>
+                    </div>
+                        {% else %}
+                             {% if 'is_authenticated' in request.session and extrait.partage == 'COMMUNAUTE' %}
+
+                                 <div class="row">
+                             <div class="col-md-4-3">
+                            <div class="card-body">
+                                <h4>{{ extrait.nom }}</h4>
+                                <audio controls>
+                                    <source src="{{ extrait.audio }}" type="audio/mpeg">
+                                </audio>
+                            </div>
+
+                        </div>
+                    </div>
+                             {% endif %}
+                        {% endif %}
+
+                    {% endfor %}
+
+            {% endif %}
+
         </div>
     {% endblock %}
