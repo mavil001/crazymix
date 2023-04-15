@@ -363,6 +363,21 @@ def extraits_artistes(request):
         return render(request,'crazymix/extraits_artistes.html', {'title':'Mes extraits','extraits':extraits_liste, 'utilisateur_id':utilisateur_id})
     else:
         return redirect('login')
+def changerPartage(request):
+    if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+        data = json.loads(request.body)
+        extrait_id = data['extrait_id']
+        extrait = ExtraitAudio.objects.get(id=extrait_id)
+        partage = extrait.partage
+        if (extrait.partage == 'PUBLIC'):
+            extrait.partage = 'COMMUNAUTE'
+        elif (extrait.partage == 'COMMUNAUTE'):
+            extrait.partage = 'PERSONNEL'
+        elif (extrait.partage == 'PERSONNEL'):
+            extrait.partage = 'PUBLIC'
+        extrait.save()
+        return JsonResponse({'valid': 'valid','partage': partage, 'extrait_id': extrait_id})
+    return JsonResponse({'valid': 'invalid'})
 
 def modifierPartage(request, extrait_id : str):
     extrait = ExtraitAudio.objects.get(id=extrait_id)
