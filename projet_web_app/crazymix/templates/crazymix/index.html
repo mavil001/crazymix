@@ -125,15 +125,73 @@
                                     <audio controls>
                                         <source src="{{ extrait.audio }}" type="audio/mpeg">
                                     </audio>
-                                    <a onclick="modifierReaction(event)" href="#"><img id="reaction{{ extrait.id }}"
-                                            {#                                            {% if extrait.reaction == 'True' %}#}
-                                                                                       src="{% static 'crazymix/img/suprised.png' %}"
-                                                                                       style="Width:35px;border-radius: 22px;"
-                                    /></a>
-                                    {#                                            {% else %}#}
-                                    {#                                                src="{% static 'crazymix/img/suprised.png' %}"#}
-                                    {#                                                style="Width:32px;border-radius: 22px;"/></a>#}
-                                    {#                                            {% endif %}#}
+                                    {% if 'is_authenticated' in request.session %}
+                                        <div class="ml-2 mr-2 bg-dark rounded-pill d-flex justify-content-around align-items-center">
+                                            <a onclick="modifierReaction(event)" href="#"><img
+                                                    id="frowning/{{ extrait.id }}"
+                                                    src="{% static 'crazymix/img/frowning.png' %}"
+                                                    {% if extrait.reactionActive == 'FROWNING' %}
+                                                    name="active{{ extrait.id }}"
+                                                    style="Width:55px;border-radius: 20px;"
+                                                    {% else %}
+                                                    style="Width:43px;border-radius: 20px;"
+                                                    {% endif %}
+
+                                            /></a>
+                                            <a onclick="modifierReaction(event)" href="#"><img
+                                                    id="blushing/{{ extrait.id }}"
+                                                    src="{% static 'crazymix/img/blushing.png' %}"
+                                                    {% if extrait.reactionActive == 'BLUSHING' %}
+                                                    style="Width:55px;border-radius: 20px;"
+                                                    name="active{{ extrait.id }}"
+                                                    {% else %}
+                                                    style="Width:43px;border-radius: 20px;"
+                                                    {% endif %}
+
+                                            /></a>
+                                            <a onclick="modifierReaction(event)" href="#"><img
+                                                    id="winky/{{ extrait.id }}"
+                                                    src="{% static 'crazymix/img/winky.png' %}"
+                                                    {% if extrait.reactionActive == 'WINKY' %}
+                                                    style="Width:55px;border-radius: 20px;"
+                                                    name="active{{ extrait.id }}"
+                                                    {% else %}
+                                                    style="Width:43px;border-radius: 20px;"
+                                                    {% endif %}
+
+                                            /></a>
+                                            <a onclick="modifierReaction(event)" href="#"><img
+                                                    id="love/{{ extrait.id }}"
+                                                    src="{% static 'crazymix/img/love.png' %}"
+                                                    {% if extrait.reactionActive == 'LOVE' %}
+                                                    style="Width:55px;border-radius: 20px;"
+                                                    name="active{{ extrait.id }}"
+                                                    {% else %}
+                                                    style="Width:43px;border-radius: 20px;"
+                                                    {% endif %}
+                                            /></a>
+                                            <a onclick="modifierReaction(event)" href="#"><img
+                                                    id="cool/{{ extrait.id }}"
+                                                    src="{% static 'crazymix/img/cool.png' %}"
+                                                    {% if extrait.reactionActive == 'COOL' %}
+                                                    style="Width:55px;border-radius: 20px;"
+                                                    name="active{{ extrait.id }}"
+                                                    {% else %}
+                                                    style="Width:43px;border-radius: 20px;"
+                                                    {% endif %}
+
+                                            /></a>
+                                            <img
+                                                    src="{% static 'crazymix/img/plus.png' %}" class="mb-5"
+                                                    {#                                            {% if extrait.reaction == 'True' %}#}
+                                                    style="Width:15px;height:15px;border-radius:20px;"
+                                                    {#                                            {% else %}#}
+                                                    {#                                                style="Width:32px;border-radius: 22px;"/></a>#}
+                                                    {#                                            {% endif %}#}
+
+                                            />
+                                        </div>
+                                    {% endif %}
 
                                 </div>
 
