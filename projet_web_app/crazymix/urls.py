@@ -9,6 +9,7 @@ urlpatterns = [
     path('reservation/<reservation_id>', views.reservation, name="reservationModif"),
     # path('modifierPartage/<extrait_id>', views.modifierPartage, name="modifierPartage"),
     path('modifierFavoris/', views.modifierFavoris, name="modifierFavoris"),
+    path('modifierReaction/', views.modifierReaction, name="modifierReaction"),
     path('changerPartage/', views.changerPartage, name="changerPartage"),
     path('valider_username/', views.valider_username, name="valider_username"),
     path('sessions/', views.sessions, name="sessions"),
