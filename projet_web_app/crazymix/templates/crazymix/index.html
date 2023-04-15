@@ -4,21 +4,35 @@
 {% block title %}Crazymix-Accueil{% endblock %}
 <div style="background-image: url('{% static "crazymix/img/studio.jpg" %}'); background-size: cover;">
     {% block contenu %}
-
-        <a class="btn btn-light d-table mt-5 mx-auto" href="{% url 'register' %}">M'inscrire</a>
-
-             {% if 'is_authenticated' in request.session %}
-                 <a class="btn btn-light d-table mt-5 mx-auto" href="/crazymix/reservation/new">Réserver ma session au
-                                        studio</a>
-            {% endif %}
-                {% if extraits_public %}
-
-                    {% for extrait in extraits_public %}
-                        {% if extrait.partage == 'PUBLIC'  %}
-                         <div class="row">
-                             <div class="col-md-4-3">
+        {% if 'is_authenticated' not in request.session %}
+            <a class="btn btn-light d-table mt-5 mx-auto" href="{% url 'register' %}">M'inscrire</a>
+        {% endif %}
+        {% if 'is_authenticated' in request.session %}
+            <a class="btn btn-light d-table mt-5 mx-auto" href="/crazymix/reservation/new">Réserver ma session au
+                studio</a>
+        {% endif %}
+        {% if extraits_public %}
+            {% csrf_token %}
+            {% for extrait in extraits_public %}
+                {% if extrait.partage == 'PUBLIC' %}
+                    <div class="row">
+                        <div class="col-md-4-3">
                             <div class="card-body">
-                                <h4>{{ extrait.nom }}</h4>
+                                <div class="d-flex justify-content-between">
+                                    <h4 class="ml-3 mt-4">{{ extrait.nom }}</h4>
+                                    <div class="mt-4 mr-3">
+                                        {% if 'is_authenticated' in request.session %}
+                                            <a onclick="modifierFavoris(event)" href="#"><img id="{{ extrait.id }}"
+                                                    {% if extrait.favoris == 'True' %}
+                                                                                              src="{% static 'crazymix/img/favoris.png' %}"
+                                                    {% else %}
+                                                                                              src="{% static 'crazymix/img/ajouter_favoris.png' %}"
+                                                    {% endif %}
+                                                                                              style="Width:32px;border-radius: 22px;"/></a>
+                                        {% endif %}
+                                    </div>
+                                </div>
+
                                 <audio controls>
                                     <source src="{{ extrait.audio }}" type="audio/mpeg">
                                 </audio>
@@ -26,26 +40,41 @@
 
                         </div>
                     </div>
-                        {% else %}
-                             {% if 'is_authenticated' in request.session and extrait.partage == 'COMMUNAUTE' %}
+                {% else %}
+                    {% if 'is_authenticated' in request.session and extrait.partage == 'COMMUNAUTE' %}
 
-                                 <div class="row">
-                             <div class="col-md-4-3">
-                            <div class="card-body">
-                                <h4>{{ extrait.nom }}</h4>
-                                <audio controls>
-                                    <source src="{{ extrait.audio }}" type="audio/mpeg">
-                                </audio>
+                        <div class="row">
+                            <div class="col-md-4-3">
+                                <div class="card-body">
+                                    <div class="d-flex">
+                                        <h4 class="ml-3 mt-3">{{ extrait.nom }}</h4>
+                                        <div class="ml-2 mt-3">
+                                            {% if 'is_authenticated' in request.session %}
+                                                <a onclick="modifierFavoris(event)" href="#"><img id="{{ extrait.id }}"
+                                                        {% if extrait.favoris == 'True' %}
+                                                                                                  src="{% static 'crazymix/img/favoris.png' %}"
+                                                        {% else %}
+                                                                                                  src="{% static 'crazymix/img/ajouter_favoris.png' %}"
+                                                        {% endif %}
+                                                                                                  style="Width:32px;border-radius: 22px;"/></a>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                    <audio controls>
+                                        <source src="{{ extrait.audio }}" type="audio/mpeg">
+                                    </audio>
+                                </div>
+
                             </div>
-
                         </div>
-                    </div>
-                             {% endif %}
-                        {% endif %}
+                    {% endif %}
+                {% endif %}
 
-                    {% endfor %}
+            {% endfor %}
 
-            {% endif %}
+        {% endif %}
 
         </div>
+        <script type="text/javascript" src="{% static 'favoris.js' %}"></script>
+
     {% endblock %}

@@ -84,3 +84,7 @@ class ExtraitAudio(Document):
     #         with open(extrait_path, 'rb') as f:
     #             self.audio.put(f, content_type='audio/mp3')
     #             self.save()
+
+class Favoris(Document):
+    utilisateur = ReferenceField(Utilisateur, reverse_delete_rule=mongoengine.CASCADE, required=True)
+    audio = ReferenceField(ExtraitAudio, reverse_delete_rule=mongoengine.CASCADE, required=True)

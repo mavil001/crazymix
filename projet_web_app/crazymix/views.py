@@ -2,7 +2,7 @@ from django.contrib import messages
 from django.core.files.storage import FileSystemStorage
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
-from crazymix.models import Utilisateur, Reservation, ExtraitAudio
+from crazymix.models import Utilisateur, Reservation, ExtraitAudio, Favoris
 from .forms import LoginForm, RegisterForm, ModifierProfilForm, \
     ModifierInfoPersoForm, ModifierContactForm, ModifierAdresseForm, \
     ModifierMdpForm
@@ -27,6 +27,7 @@ from django.db.models import Q
 
 def index(request):
     extraits_public=ExtraitAudio.objects.all()
+    user=getUser(request)
     print(extraits_public)
     extraits_liste = []
     for x in extraits_public:
@@ -38,7 +39,12 @@ def index(request):
             audio_src = f"data:audio/mpeg;base64,{audio_data}"
         else:
             audio_src = None
-        extraits_liste.append({'audio': audio_src, 'id': x.id, 'partage': x.partage, 'nom':x.nom})
+        favori='False'
+        if(user):
+            favorisBD=Favoris.objects.filter(audio=x, utilisateur=user.id)
+            if(favorisBD):
+                favori='True'
+        extraits_liste.append({'audio': audio_src, 'id': x.id, 'partage': x.partage, 'nom':x.nom, 'favoris':favori})
 
     return render(request,'crazymix/index.html',{'title':'Extraits disponibles',
                    'extraits_public': extraits_liste})
@@ -363,6 +369,25 @@ def extraits_artistes(request):
         return render(request,'crazymix/extraits_artistes.html', {'title':'Mes extraits','extraits':extraits_liste, 'utilisateur_id':utilisateur_id})
     else:
         return redirect('login')
+
+def modifierFavoris(request):
+    if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+        data = json.loads(request.body)
+        extrait_id = data['extrait_id']
+        favoris = data['favoris']
+        extrait = ExtraitAudio.objects.get(id=extrait_id)
+        if extrait:
+            user = getUser(request)
+            if user:
+                favorisBD = Favoris.objects.filter(utilisateur=user.id, audio=extrait)
+                if(favoris=='False' and not favorisBD):
+                    favorisCree=Favoris(utilisateur=user.id, audio=extrait)
+                    favorisCree.save()
+                elif (favoris=='True' and favorisBD):
+                    favorisBD.delete()
+        return JsonResponse({'valid': 'valid','favoris': favoris, 'extrait_id': extrait_id})
+    return JsonResponse({'valid': 'invalid'})
+
 def changerPartage(request):
     if request.headers.get('x-requested-with') == 'XMLHttpRequest':
         data = json.loads(request.body)
@@ -379,23 +404,23 @@ def changerPartage(request):
         return JsonResponse({'valid': 'valid','partage': partage, 'extrait_id': extrait_id})
     return JsonResponse({'valid': 'invalid'})
 
-def modifierPartage(request, extrait_id : str):
-    extrait = ExtraitAudio.objects.get(id=extrait_id)
-    if(extrait.partage=='PUBLIC'):
-        extrait.partage='COMMUNAUTE'
-    elif(extrait.partage=='COMMUNAUTE'):
-        extrait.partage='PERSONNEL'
-    elif(extrait.partage=='PERSONNEL'):
-        extrait.partage='PUBLIC'
-
-    if request.POST.get('public'):
-        extrait.partage='PUBLIC'
-    elif request.POST.get('communaute'):
-        extrait.partage = 'COMMUNAUTE'
-    elif request.POST.get('personnel'):
-        extrait.partage = 'Pesonnel'
-    extrait.save()
-    return redirect('extraits_artistes')
+# def modifierPartage(request, extrait_id : str):
+#     extrait = ExtraitAudio.objects.get(id=extrait_id)
+#     if(extrait.partage=='PUBLIC'):
+#         extrait.partage='COMMUNAUTE'
+#     elif(extrait.partage=='COMMUNAUTE'):
+#         extrait.partage='PERSONNEL'
+#     elif(extrait.partage=='PERSONNEL'):
+#         extrait.partage='PUBLIC'
+#
+#     if request.POST.get('public'):
+#         extrait.partage='PUBLIC'
+#     elif request.POST.get('communaute'):
+#         extrait.partage = 'COMMUNAUTE'
+#     elif request.POST.get('personnel'):
+#         extrait.partage = 'Pesonnel'
+#     extrait.save()
+#     return redirect('extraits_artistes')
 
 def connexion(request):
     return render(request, 'crazymix/connexion.html', {'title': 'Se connecter'})
