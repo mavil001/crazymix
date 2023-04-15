@@ -21,13 +21,28 @@ from django.views.generic import View
 from django.http import JsonResponse
 import json
 from .models import STATUT
-
+from django.db.models import Q
 
 # Create your views here.
 
 def index(request):
-    return render(request, 'crazymix/index.html', {'title': 'CrazyMix - Studio'})
+    extraits_public=ExtraitAudio.objects.all()
+    print(extraits_public)
+    extraits_liste = []
+    for x in extraits_public:
 
+        audio_proxy = x.audio
+        if audio_proxy:
+            audio_bytes = audio_proxy.read()
+            audio_data = base64.b64encode(audio_bytes).decode('utf-8')
+            audio_src = f"data:audio/mpeg;base64,{audio_data}"
+        else:
+            audio_src = None
+        extraits_liste.append({'audio': audio_src, 'id': x.id, 'partage': x.partage, 'nom':x.nom})
+
+    return render(request,'crazymix/index.html',{'title':'Extraits disponibles',
+                   'extraits_public': extraits_liste})
+    # return render(request, 'crazymix/index.html', {'title': 'CrazyMix - Studio'})
 
 def bookSession(request, reservation_id=None):
     user = getUser(request)
@@ -49,11 +64,11 @@ def bookSession(request, reservation_id=None):
                                        int(fin[0].strip()), int(fin[1].strip()), 0)
 
                 if (validateReservation(dateTimeDebut, dateTimeFin)):
-                    if (reservation_id == 'None'):
+                    if(reservation_id == 'None'):
                         reservation = Reservation(debut=dateTimeDebut, fin=dateTimeFin, user=user, statut="EN_ATTENTE")
                         reservation.save()
                     else:
-                        reservation = Reservation.objects.get(id=reservation_id)
+                        reservation=Reservation.objects.get(id=reservation_id)
                         reservation.debut = dateTimeDebut
                         reservation.fin = dateTimeFin
                         reservation.save()
@@ -61,7 +76,8 @@ def bookSession(request, reservation_id=None):
     return False
 
 
-def reservation(request, reservation_id=None):
+def reservation(request,reservation_id=None):
+
     user = getUser(request)
     if (user == ""):
         return redirect('login')
@@ -69,7 +85,7 @@ def reservation(request, reservation_id=None):
     if (request.method == 'POST'):
 
         data = request.POST
-        reservation_id = request.POST.get('reservation_id')
+        reservation_id =request.POST.get('reservation_id')
         if (data['direction'] == ""):
             saved = bookSession(request, reservation_id)
             if (saved):
@@ -101,8 +117,8 @@ def reservation(request, reservation_id=None):
 
                     index_semaine = len(monthDates) - 1
                 else:
-                    if dateBase[0] == '1' and actualMonthDates[0][0][0] == 0:
-                        newMonth = int(dateBase[1]) - 1
+                    if dateBase[0] == '1'and actualMonthDates[0][0][0] == 0:
+                        newMonth=int(dateBase[1])-1
                         newYear = int(dateBase[2])
                         monthDates = cal.monthdays2calendar(newYear, newMonth)
                         index_semaine = len(monthDates) - 1
@@ -124,8 +140,8 @@ def reservation(request, reservation_id=None):
                         newWeek = 0
                         newMonth = int(dateBase[1]) + 1
                         newYear = int(dateBase[2])
-                    if actualMonthDates[len(actualMonthDates) - 1][6][0] == 0:
-                        index_semaine = 1
+                    if actualMonthDates[len(actualMonthDates)-1][6][0]==0:
+                        index_semaine=1
                     else:
                         index_semaine = 0
                     monthDates = cal.monthdays2calendar(newYear, newMonth)
@@ -249,7 +265,7 @@ def reservation(request, reservation_id=None):
                 {'dateComplete': "{}/{}/{}".format(semainePadding[index][0], month, year),
                  'jour': joursSemaine[index],
                  'classe': classe, 'style': style, 'date': semainePadding[index][0],
-                 'year': year, 'month': month, 'indisponibilites': []})
+                 'year': year, 'month': month, 'indisponibilites':[]})
 
         else:
             if request.method == 'GET' and semaineActuelle[index][0] == today['date']:
@@ -259,13 +275,11 @@ def reservation(request, reservation_id=None):
             datesSemaine.append(
                 {'dateComplete': "{}/{}/{}".format(semaineActuelle[index][0], dateRef.month, dateRef.year),
                  'date': semaineActuelle[index][0], 'jour': joursSemaine[index],
-                 'classe': classe, 'style': style, 'month': dateRef.month, 'year': dateRef.year,
-                 'indisponibilites': []})
+                 'classe': classe, 'style': style, 'month': dateRef.month, 'year': dateRef.year, 'indisponibilites':[]})
 
     firstDate = datetime(datesSemaine[0]['year'], datesSemaine[0]['month'], datesSemaine[0]['date'], 0, 0, 0)
     lastIndex = len(datesSemaine) - 1
-    lastDate = datetime(datesSemaine[lastIndex]['year'], datesSemaine[lastIndex]['month'],
-                        datesSemaine[lastIndex]['date'], 23, 59, 59)
+    lastDate = datetime(datesSemaine[lastIndex]['year'], datesSemaine[lastIndex]['month'], datesSemaine[lastIndex]['date'], 23, 59, 59)
     reservations = Reservation.objects.filter(debut__gte=firstDate, fin__lte=lastDate)
 
     if (len(reservations) != 0):
@@ -275,6 +289,7 @@ def reservation(request, reservation_id=None):
                 if reservation['debut'].day == jour['date']:
                     for i in range(reservation['debut'].hour, reservation['fin'].hour):
                         jour['indisponibilites'].append(i)
+
 
     # Attribution du/des nom(s) de(s) mois de la semaine
     moisSemaine = mois[dateRef.month - 1]
@@ -289,43 +304,51 @@ def reservation(request, reservation_id=None):
                                                          'moisSemaine': moisSemaine, 'today': today,
                                                          "heureActuelle": heureActuelle, 'heures': heures,
                                                          "dateIndicator": dateIndicator, 'isThisWeek': isThisWeek,
-                                                         "year": dateRef.year, 'reservation_id': reservation_id})
-
+                                                         "year": dateRef.year, 'reservation_id':reservation_id})
 
 def sessions(request):
     utilisateur_id = request.session['utilisateur_id']
-    user = Utilisateur.objects.get(id=utilisateur_id)
-    reservations = Reservation.objects.filter(user=utilisateur_id)
-    if (len(reservations) == 0):
-        reservations = None
-    return render(request, 'crazymix/sessions.html',
-                  {'title': "Mes sessions d'enregistrement", "reservations": reservations, 'user': user})
-
+    user=Utilisateur.objects.get(id=utilisateur_id)
+    reservations=Reservation.objects.filter(user=utilisateur_id)
+    if(len(reservations)==0):
+        reservations=None
+    return render(request,'crazymix/sessions.html', {'title':"Mes sessions d'enregistrement","reservations":reservations, 'user':user})
 
 def validersessions(request):
     utilisateur_id = request.session['utilisateur_id']
-    user = Utilisateur.objects.get(id=utilisateur_id)
-    if (user.role == "PROFESSIONNEL"):
-        reservations = Reservation.objects.filter(statut="EN_ATTENTE")
-        if (len(reservations) == 0):
-            reservations = None
-        return render(request, 'crazymix/validerSessions.html',
-                      {'title': "Validation de sessions", "reservations": reservations, 'user': user})
+    user=Utilisateur.objects.get(id=utilisateur_id)
+    if(user.role=="PROFESSIONNEL"):
+        reservations=Reservation.objects.filter(statut="EN_ATTENTE")
+        if(len(reservations)==0):
+            reservations=None
+        return render(request,'crazymix/validerSessions.html', {'title':"Validation de sessions","reservations":reservations, 'user':user})
     else:
         return redirect("index")
-
-
 def extraits_artistes(request):
     if 'is_authenticated' in request.session and request.session['is_authenticated']:
-        utilisateur_id = request.session['utilisateur_id']
-        extraits = ExtraitAudio.objects.filter(utilisateur=utilisateur_id)
+        utilisateur_id=request.session['utilisateur_id']
+        extraits=ExtraitAudio.objects.filter(utilisateur=utilisateur_id)
+
+        extrait=None
+        partage='PUBLIC'
         if (request.method == "POST"):
             audio = request.FILES.get('uploadAudio')
-            utilisateur_id = request.session['utilisateur_id']
-            utilisateur = Utilisateur.objects.get(id=utilisateur_id)
-            extrait = ExtraitAudio(audio=audio, utilisateur=utilisateur, partage='PUBLIC')
+            utilisateur_id=request.session['utilisateur_id']
+            utilisateur=Utilisateur.objects.get(id=utilisateur_id)
+            nom=request.POST.get('nom')
+            public=request.POST.get('public')
+            communaute=request.POST.get('communaute')
+            personnel=request.POST.get('personnel')
+            partage=request.POST.get('partage')
+            if partage == 'PUBLIC':
+                extrait=ExtraitAudio(audio=audio,utilisateur=utilisateur, partage='PUBLIC',nom=nom)
+            elif partage == 'COMMUNAUTE':
+                extrait = ExtraitAudio(audio=audio, utilisateur=utilisateur, partage='COMMUNAUTE',nom=nom)
+            elif partage == 'PERSONNEL':
+                extrait = ExtraitAudio(audio=audio, utilisateur=utilisateur, partage='PERSONNEL',nom=nom)
             extrait.save()
-        extraits_liste = []
+            return redirect('extraits_artistes')
+        extraits_liste=[]
         for x in extraits:
 
             audio_proxy = x.audio
@@ -334,43 +357,30 @@ def extraits_artistes(request):
                 audio_data = base64.b64encode(audio_bytes).decode('utf-8')
                 audio_src = f"data:audio/mpeg;base64,{audio_data}"
             else:
-                audio_src = None
-            extraits_liste.append({'audio': audio_src, 'id': x.id, 'partage': x.partage})
+                audio_src=None
+            extraits_liste.append({'audio':audio_src,'id':x.id, 'partage':x.partage,'nom':x.nom})
 
-        return render(request, 'crazymix/extraits_artistes.html',
-                      {'title': 'Mes extraits', 'extraits': extraits_liste, 'utilisateur_id': utilisateur_id})
+        return render(request,'crazymix/extraits_artistes.html', {'title':'Mes extraits','extraits':extraits_liste, 'utilisateur_id':utilisateur_id})
     else:
         return redirect('login')
 
-
-def changerPartage(request):
-    if request.headers.get('x-requested-with') == 'XMLHttpRequest':
-        data = json.loads(request.body)
-        extrait_id = data['extrait_id']
-        extrait = ExtraitAudio.objects.get(id=extrait_id)
-        partage = extrait.partage
-        if (extrait.partage == 'PUBLIC'):
-            extrait.partage = 'COMMUNAUTE'
-        elif (extrait.partage == 'COMMUNAUTE'):
-            extrait.partage = 'PERSONNEL'
-        elif (extrait.partage == 'PERSONNEL'):
-            extrait.partage = 'PUBLIC'
-        extrait.save()
-        return JsonResponse({'valid': 'valid','partage': partage, 'extrait_id': extrait_id})
-    return JsonResponse({'valid': 'invalid'})
-
-
-def modifierPartage(request, extrait_id: str):
+def modifierPartage(request, extrait_id : str):
     extrait = ExtraitAudio.objects.get(id=extrait_id)
-    if (extrait.partage == 'PUBLIC'):
+    if(extrait.partage=='PUBLIC'):
+        extrait.partage='COMMUNAUTE'
+    elif(extrait.partage=='COMMUNAUTE'):
+        extrait.partage='PERSONNEL'
+    elif(extrait.partage=='PERSONNEL'):
+        extrait.partage='PUBLIC'
+
+    if request.POST.get('public'):
+        extrait.partage='PUBLIC'
+    elif request.POST.get('communaute'):
         extrait.partage = 'COMMUNAUTE'
-    elif (extrait.partage == 'COMMUNAUTE'):
-        extrait.partage = 'PERSONNEL'
-    elif (extrait.partage == 'PERSONNEL'):
-        extrait.partage = 'PUBLIC'
+    elif request.POST.get('personnel'):
+        extrait.partage = 'Pesonnel'
     extrait.save()
     return redirect('extraits_artistes')
-
 
 def connexion(request):
     return render(request, 'crazymix/connexion.html', {'title': 'Se connecter'})
@@ -416,7 +426,6 @@ def compte(request):
 def infos(request):
     return render(request, 'crazymix/infos.html', {'title': 'Informations sur le site du studio'})
 
-
 def valider_username(request):
     if request.headers.get('x-requested-with') == 'XMLHttpRequest':
         data = json.loads(request.body)
@@ -425,8 +434,6 @@ def valider_username(request):
         if utilisateur is None:
             return JsonResponse({'valid': 'invalid'})
         return JsonResponse({'valid': 'valid'})
-
-
 def login(request):
     if (request.method == "POST"):
         form = LoginForm(request.POST)
@@ -497,8 +504,7 @@ def register(request):
                 utilisateur.save()
                 return redirect('login')
             else:
-                messages.add_message(request, messages.INFO,
-                                     "Ce nom d'utilisateur existe déja, Veuillez utiliser un autre")
+                messages.add_message(request, messages.INFO, "Ce nom d'utilisateur existe déja, Veuillez utiliser un autre")
         return render(request, 'registration/signup.html', {'form': form})
     else:
         form = RegisterForm()
@@ -517,19 +523,18 @@ def upload(request):
 
 
 def uploadAudio(request):
-    if request.method == "POST" and request.FILES["upload"]:
-        audio_file = request.FILES["upload"]
+    if request.method=="POST" and request.FILES["upload"]:
+        audio_file=request.FILES["upload"]
 
         # audio=AudioSegment.from_file(audio_file)
         # extract = audio[2 * 60 * 1000: 2 * 60 * 1000 + 30 * 1000]
-        fss = FileSystemStorage()
-        file = fss.save(audio_file.name, audio_file)
+        fss=FileSystemStorage()
+        file=fss.save(audio_file.name,audio_file)
         # récupérer l'URL du fichier extrait
         file_url = fss.url(file)
 
-        return render(request, "crazymix/uploadAudio.html", {"file_url": file_url})
-    return render(request, "crazymix/uploadAudio.html")
-
+        return render(request, "crazymix/uploadAudio.html",{"file_url":file_url})
+    return render(request,"crazymix/uploadAudio.html")
 
 def getUser(request):
     utilisateur = ""
@@ -549,12 +554,12 @@ def validateReservation(dateTimeDebut, dateTimeFin):
 def modifierProfil(request, id: str):
     utilisateur = Utilisateur.objects.get(id=id)
     if request.method == 'POST':
-        # idUser = request.POST.get('id')
+        idUser = request.POST.get('id')
         # form = ModifierProfilForm(request.POST, request.FILES,instance=None)
 
         # idUser= form.cleaned_data['id']
-        # utilisateur = Utilisateur.objects.get(id=idUser)
-        form = ModifierProfilForm(request.POST, instance=utilisateur)
+        utilisateur = Utilisateur.objects.get(id=idUser)
+
         utilisateur.last_name = request.POST.get('last_name')
         utilisateur.first_name = request.POST.get('first_name')
         utilisateur.email = request.POST.get('email')
@@ -571,10 +576,10 @@ def modifierProfil(request, id: str):
             utilisateur.save()
             messages.add_message(request, messages.INFO, "Modification effectuée avec succès")
             return redirect('compte')
-    else:
-        utilisateur = Utilisateur.objects.get(id=id)
-        form = ModifierProfilForm(instance=utilisateur)
-    return render(request, 'crazymix/modifierProfil.html', {'form': form})
+        else:
+            utilisateur = Utilisateur.objects.get(id=id)
+            form = ModifierProfilForm(instance=utilisateur)
+        return render(request, 'crazymix/modifierProfil.html', {'form': form})
 
 
 def modifierContact(request, id: str):
@@ -638,7 +643,6 @@ def modifierAdresse(request, id: str):
         form = ModifierAdresseForm(instance=utilisateur)
     return render(request, 'crazymix/modifierContact.html', {'form': form})
 
-
 def modifierMDP(request, id: str):
     utilisateur = Utilisateur.objects.get(id=id)
     if request.method == 'POST':
@@ -664,6 +668,7 @@ def modifierMDP(request, id: str):
     return render(request, 'crazymix/modifierMDP.html', {'form': form})
 
 
+
 def annulerReservation(request, reservation_id):
     utilisateur_id = request.session['utilisateur_id']
     try:
@@ -684,13 +689,12 @@ def validerReservation(request, reservation_id):
     reservation.save()
     return redirect('sessions')
 
-
-def supprimerExtrait(request, id):
+def supprimerExtrait(request,id):
     utilisateur_id = request.session['utilisateur_id']
     try:
-        extraits_artistes = ExtraitAudio.objects.get(id=id)
+        extraits_artistes=ExtraitAudio.objects.get(id=id)
     except ExtraitAudio.DoesNotExist:
-        return HttpResponse("")
+        return  HttpResponse("")
 
     extraits_artistes.delete()
     return redirect('extraits_artistes')
