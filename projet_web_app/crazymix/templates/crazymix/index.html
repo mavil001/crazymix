@@ -13,104 +13,17 @@
         {% endif %}
         {% if extraits_public %}
             {% csrf_token %}
+            {#            <div class="d-flex flex-column">#}
             {% for extrait in extraits_public %}
+
                 {% if extrait.partage == 'PUBLIC' %}
-                    <div class="row">
-                        <div class="col-md-4-3">
-                            <div class="card-body">
-                                <div class="d-flex justify-content-between">
-                                    <h4 class="ml-3 mt-4">{{ extrait.nom }}</h4>
-                                    <div class="mt-4 mr-3">
-                                        {% if 'is_authenticated' in request.session %}
-                                            <a onclick="modifierFavoris(event)" href="#"><img id="{{ extrait.id }}"
-                                                    {% if extrait.favoris == 'True' %}
-                                                                                              src="{% static 'crazymix/img/favoris.png' %}"
-                                                    {% else %}
-                                                                                              src="{% static 'crazymix/img/ajouter_favoris.png' %}"
-                                                    {% endif %}
-                                                                                              style="Width:32px;border-radius: 22px;"/></a>
-                                        {% endif %}
-                                    </div>
-                                </div>
-
-                                <audio controls>
-                                    <source src="{{ extrait.audio }}" type="audio/mpeg">
-                                </audio>
-                                {% if 'is_authenticated' in request.session %}
-                                    <div class="ml-2 mr-2 bg-dark rounded-pill d-flex justify-content-around align-items-center">
-                                    <a onclick="modifierReaction(event)" href="#"><img id="frowning/{{ extrait.id }}"
-                                                                                       src="{% static 'crazymix/img/frowning.png' %}"
-                                            {% if extrait.reactionActive == 'FROWNING' %}
-                                                                                       name="active{{ extrait.id }}"
-                                                                                       style="Width:55px;border-radius: 20px;"
-                                            {% else %}
-                                                                                       style="Width:43px;border-radius: 20px;"
-                                            {% endif %}
-
-                                    /></a>
-                                    <a onclick="modifierReaction(event)" href="#"><img id="blushing/{{ extrait.id }}"
-                                                                                       src="{% static 'crazymix/img/blushing.png' %}"
-                                            {% if extrait.reactionActive == 'BLUSHING' %}
-                                                                                       style="Width:55px;border-radius: 20px;"
-                                                                                       name="active{{ extrait.id }}"
-                                            {% else %}
-                                                                                       style="Width:43px;border-radius: 20px;"
-                                            {% endif %}
-
-                                    /></a>
-                                    <a onclick="modifierReaction(event)" href="#"><img id="winky/{{ extrait.id }}"
-                                                                                       src="{% static 'crazymix/img/winky.png' %}"
-                                            {% if extrait.reactionActive == 'WINKY' %}
-                                                                                       style="Width:55px;border-radius: 20px;"
-                                                                                       name="active{{ extrait.id }}"
-                                            {% else %}
-                                                                                       style="Width:43px;border-radius: 20px;"
-                                            {% endif %}
-
-                                    /></a>
-                                    <a onclick="modifierReaction(event)" href="#"><img id="love/{{ extrait.id }}"
-                                                                                       src="{% static 'crazymix/img/love.png' %}"
-                                            {% if extrait.reactionActive == 'LOVE' %}
-                                                                                       style="Width:55px;border-radius: 20px;"
-                                                                                       name="active{{ extrait.id }}"
-                                            {% else %}
-                                                                                       style="Width:43px;border-radius: 20px;"
-                                            {% endif %}
-                                    /></a>
-                                    <a onclick="modifierReaction(event)" href="#"><img id="cool/{{ extrait.id }}"
-                                                                                       src="{% static 'crazymix/img/cool.png' %}"
-                                            {% if extrait.reactionActive == 'COOL' %}
-                                                                                       style="Width:55px;border-radius: 20px;"
-                                                                                       name="active{{ extrait.id }}"
-                                            {% else %}
-                                                                                       style="Width:43px;border-radius: 20px;"
-                                            {% endif %}
-
-                                    /></a>
-                                    <img
-                                            src="{% static 'crazymix/img/plus.png' %}" class="mb-5"
-                                            {#                                            {% if extrait.reaction == 'True' %}#}
-                                            style="Width:15px;height:15px;border-radius:20px;"
-                                            {#                                            {% else %}#}
-                                            {#                                                style="Width:32px;border-radius: 22px;"/></a>#}
-                                            {#                                            {% endif %}#}
-
-                                    />
-                                {% endif %}
-                                </div>
-                            </div>
-
-                        </div>
-                    </div>
-                {% else %}
-                    {% if 'is_authenticated' in request.session and extrait.partage == 'COMMUNAUTE' %}
-
+                    <div class="d-flex">
                         <div class="row">
                             <div class="col-md-4-3">
                                 <div class="card-body">
-                                    <div class="d-flex">
-                                        <h4 class="ml-3 mt-3">{{ extrait.nom }}</h4>
-                                        <div class="ml-2 mt-3">
+                                    <div class="d-flex justify-content-between">
+                                        <h4 class="ml-3 mt-4">{{ extrait.nom }}</h4>
+                                        <div class="mt-4 mr-3">
                                             {% if 'is_authenticated' in request.session %}
                                                 <a onclick="modifierFavoris(event)" href="#"><img id="{{ extrait.id }}"
                                                         {% if extrait.favoris == 'True' %}
@@ -122,19 +35,173 @@
                                             {% endif %}
                                         </div>
                                     </div>
+
+                                    <audio controls>
+                                        <source src="{{ extrait.audio }}" type="audio/mpeg">
+                                    </audio>
+                                    {% if 'is_authenticated' not in request.session %}
+                                        <div class="ml-2 mr-2  rounded-pill d-flex justify-content-around align-items-center"
+                                             style="height:55px;">
+                                        </div>
+                                    {% else %}
+                                        <div class="ml-2 mr-2 bg-dark rounded-pill d-flex justify-content-around align-items-center"
+                                             style="height:55px;">
+
+                                        <a onclick="modifierReaction(event)" href="#"><img
+                                                id="frowning/{{ extrait.id }}"
+                                                src="{% static 'crazymix/img/frowning.png' %}"
+                                                {% if extrait.reactionActive == 'FROWNING' %}
+                                                name="active{{ extrait.id }}"
+                                                style="Width:55px;border-radius: 20px;"
+                                                {% else %}
+                                                style="Width:43px;border-radius: 20px;"
+                                                {% endif %}
+
+                                        /></a>
+                                        <a onclick="modifierReaction(event)" href="#"><img
+                                                id="blushing/{{ extrait.id }}"
+                                                src="{% static 'crazymix/img/blushing.png' %}"
+                                                {% if extrait.reactionActive == 'BLUSHING' %}
+                                                style="Width:55px;border-radius: 20px;"
+                                                name="active{{ extrait.id }}"
+                                                {% else %}
+                                                style="Width:43px;border-radius: 20px;"
+                                                {% endif %}
+
+                                        /></a>
+                                        <a onclick="modifierReaction(event)" href="#"><img id="winky/{{ extrait.id }}"
+                                                                                           src="{% static 'crazymix/img/winky.png' %}"
+                                                {% if extrait.reactionActive == 'WINKY' %}
+                                                                                           style="Width:55px;border-radius: 20px;"
+                                                                                           name="active{{ extrait.id }}"
+                                                {% else %}
+                                                                                           style="Width:43px;border-radius: 20px;"
+                                                {% endif %}
+
+                                        /></a>
+                                        <a onclick="modifierReaction(event)" href="#"><img id="love/{{ extrait.id }}"
+                                                                                           src="{% static 'crazymix/img/love.png' %}"
+                                                {% if extrait.reactionActive == 'LOVE' %}
+                                                                                           style="Width:55px;border-radius: 20px;"
+                                                                                           name="active{{ extrait.id }}"
+                                                {% else %}
+                                                                                           style="Width:43px;border-radius: 20px;"
+                                                {% endif %}
+                                        /></a>
+                                        <a onclick="modifierReaction(event)" href="#"><img id="cool/{{ extrait.id }}"
+                                                                                           src="{% static 'crazymix/img/cool.png' %}"
+                                                {% if extrait.reactionActive == 'COOL' %}
+                                                                                           style="Width:55px;border-radius: 20px;"
+                                                                                           name="active{{ extrait.id }}"
+                                                {% else %}
+                                                                                           style="Width:43px;border-radius: 20px;"
+                                                {% endif %}
+
+                                        /></a>
+                                        <img
+                                                src="{% static 'crazymix/img/plus.png' %}" class="mb-5"
+                                                {#                                            {% if extrait.reaction == 'True' %}#}
+                                                style="Width:15px;height:15px;border-radius:20px;"
+                                                {#                                            {% else %}#}
+                                                {#                                                style="Width:32px;border-radius: 22px;"/></a>#}
+                                                {#                                            {% endif %}#}
+
+                                        />
+                                    {% endif %}
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-4-3">
+                                <div class="card-body">
+                                    {#                            <div class="d-flex">#}
+                                    {#                                <h6 class="mt-5"></h6>#}
+                                    {#                            </div>#}
+
+                                    <div class="mt-4 d-flex flex-column  rounded-pill">
+                                        {% for reaction in extrait.reactions %}
+                                            <div class="d-flex inline mb-3">
+                                                <div style="/* width: 40px; */position:relative;/* margin-right: 11px; */padding-right: 30px;padding-left: 10px;">
+                                                    {% for utilisateur in reaction.utilisateurs_liste %}
+                                                        {#                                <img style="width: 30px;border-radius: 25px;" src="{{ reaction.src }}">#}
+                                                        {#                                <img style="width: 32px;height: 32px;border-radius: 25px;position: absolute;top: 5px;right: -24px;"#}
+                                                        {#                                     src="{{ reaction.utilisateurImg }}">#}
+                                                        <img style="width: 35px;height:35px;border-radius: 25px;"
+                                                             src="{{ utilisateur.utilisateurImg }}">
+
+                                                    {% endfor %}
+                                                    <img style="width: 32px;height: 32px;border-radius: 25px;position: absolute;top: -12px;right: 4px;"
+                                                         src="{{ reaction.src }}">
+                                                </div>
+
+
+                                            </div>
+                                        {% endfor %}
+                                        {% if extrait.utilisateurs_surplus != "" %}
+                                            <div class="ml-2 dropdown">
+                                                <button class="btn btn-secondary dropdown-toggle pr-3" type="button"
+                                                        id="dropdownMenuButton"
+                                                        data-toggle="dropdown" aria-haspopup="true"
+                                                        aria-expanded="false">
+                                                </button>
+                                                <div class="dropdown-menu pt-2 pr-2" style="min-width:1px;padding: 0px;"
+                                                     aria-labelledby="dropdownMenuButton">
+                                                    {% for utilisateur in extrait.utilisateurs_surplus %}
+                                                        <a class="dropdown-item" style="position:relative;"
+                                                           href="{% url 'index' %}">
+                                                            <img class="mt-1"
+                                                                 style="width: 30px;height:32px;border-radius: 25px;"
+                                                                 src="{{ utilisateur.utilisateurImg }}"><img
+                                                                class="mt-1"
+                                                                style="width: 32px;height: 32px;border-radius: 25px;position: absolute;top: -12px;right: 4px;"
+                                                                src="{{ utilisateur.reaction }}"></a>
+
+                                                    {% endfor %}
+                                                </div>
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% else %}
+                    {% if 'is_authenticated' in request.session and extrait.partage == 'COMMUNAUTE' %}
+                        <div class="row">
+                            <div class="col-md-4-3">
+                                <div class="card-body">
+                                    <div class="d-flex">
+                                        <h4 class="ml-3 mt-3">{{ extrait.nom }}</h4>
+                                        <div class="ml-2 mt-3">
+                                            {% if 'is_authenticated' in request.session %}
+                                                <a onclick="modifierFavoris(event)" href="#"><img
+                                                        id="{{ extrait.id }}"
+                                                        {% if extrait.favoris == 'True' %}
+                                                        src="{% static 'crazymix/img/favoris.png' %}"
+                                                        {% else %}
+                                                        src="{% static 'crazymix/img/ajouter_favoris.png' %}"
+                                                        {% endif %}
+                                                        style="Width:32px;border-radius: 22px;"/></a>
+                                            {% endif %}
+                                        </div>
+                                    </div>
                                     <audio controls>
                                         <source src="{{ extrait.audio }}" type="audio/mpeg">
                                     </audio>
                                     {% if 'is_authenticated' in request.session %}
-                                        <div class="ml-2 mr-2 bg-dark rounded-pill d-flex justify-content-around align-items-center">
+                                        <div class="ml-2 mr-2 bg-dark rounded-pill d-flex justify-content-around align-items-center"
+                                             style="height:55px;">
                                             <a onclick="modifierReaction(event)" href="#"><img
                                                     id="frowning/{{ extrait.id }}"
                                                     src="{% static 'crazymix/img/frowning.png' %}"
                                                     {% if extrait.reactionActive == 'FROWNING' %}
                                                     name="active{{ extrait.id }}"
-                                                    style="Width:55px;border-radius: 20px;"
+                                                    style="Width:55px;border-radius: 27px;"
                                                     {% else %}
-                                                    style="Width:43px;border-radius: 20px;"
+                                                    style="Width:43px;border-radius: 27px;"
                                                     {% endif %}
 
                                             /></a>
@@ -142,10 +209,10 @@
                                                     id="blushing/{{ extrait.id }}"
                                                     src="{% static 'crazymix/img/blushing.png' %}"
                                                     {% if extrait.reactionActive == 'BLUSHING' %}
-                                                    style="Width:55px;border-radius: 20px;"
+                                                    style="Width:55px;border-radius: 27px;"
                                                     name="active{{ extrait.id }}"
                                                     {% else %}
-                                                    style="Width:43px;border-radius: 20px;"
+                                                    style="Width:43px;border-radius: 27px;"
                                                     {% endif %}
 
                                             /></a>
@@ -153,10 +220,10 @@
                                                     id="winky/{{ extrait.id }}"
                                                     src="{% static 'crazymix/img/winky.png' %}"
                                                     {% if extrait.reactionActive == 'WINKY' %}
-                                                    style="Width:55px;border-radius: 20px;"
+                                                    style="Width:55px;border-radius: 27px;"
                                                     name="active{{ extrait.id }}"
                                                     {% else %}
-                                                    style="Width:43px;border-radius: 20px;"
+                                                    style="Width:43px;border-radius: 27px;"
                                                     {% endif %}
 
                                             /></a>
@@ -164,20 +231,20 @@
                                                     id="love/{{ extrait.id }}"
                                                     src="{% static 'crazymix/img/love.png' %}"
                                                     {% if extrait.reactionActive == 'LOVE' %}
-                                                    style="Width:55px;border-radius: 20px;"
+                                                    style="Width:55px;border-radius: 27px;"
                                                     name="active{{ extrait.id }}"
                                                     {% else %}
-                                                    style="Width:43px;border-radius: 20px;"
+                                                    style="Width:43px;border-radius: 27px;"
                                                     {% endif %}
                                             /></a>
                                             <a onclick="modifierReaction(event)" href="#"><img
                                                     id="cool/{{ extrait.id }}"
                                                     src="{% static 'crazymix/img/cool.png' %}"
                                                     {% if extrait.reactionActive == 'COOL' %}
-                                                    style="Width:55px;border-radius: 20px;"
+                                                    style="Width:55px;border-radius: 27px;"
                                                     name="active{{ extrait.id }}"
                                                     {% else %}
-                                                    style="Width:43px;border-radius: 20px;"
+                                                    style="Width:43px;border-radius: 27px;"
                                                     {% endif %}
 
                                             /></a>
@@ -197,15 +264,64 @@
 
                             </div>
                         </div>
+                        <div class="row">
+                        <div class="col-md-4-3">
+                            <div class="card-body">
+                                {#                            <div class="d-flex">#}
+                                {#                                <h6 class="mt-5"></h6>#}
+                                {#                            </div>#}
+
+                                <div class="mt-4 d-flex flex-column  rounded-pill">
+                                    {% for reaction in extrait.reactions %}
+                                        <div class="d-flex inline mb-3">
+                                            <div style="/* width: 40px; */position:relative;/* margin-right: 11px; */padding-right: 30px;padding-left: 10px;">
+                                                {% for utilisateur in reaction.utilisateurs_liste %}
+                                                    {#                                <img style="width: 30px;border-radius: 25px;" src="{{ reaction.src }}">#}
+                                                    {#                                <img style="width: 32px;height: 32px;border-radius: 25px;position: absolute;top: 5px;right: -24px;"#}
+                                                    {#                                     src="{{ reaction.utilisateurImg }}">#}
+                                                    <img style="width: 35px;height:35px;border-radius: 25px;"
+                                                         src="{{ utilisateur.utilisateurImg }}">
+
+                                                {% endfor %}
+                                                <img style="width: 32px;height: 32px;border-radius: 25px;position: absolute;top: -12px;right: 4px;"
+                                                     src="{{ reaction.src }}">
+                                            </div>
+
+
+                                        </div>
+                                    {% endfor %}
+                                    {% if extrait.utilisateurs_surplus != "" %}
+                                        <div class="ml-2 dropdown">
+                                            <button class="btn btn-secondary dropdown-toggle pr-3" type="button"
+                                                    id="dropdownMenuButton"
+                                                    data-toggle="dropdown" aria-haspopup="true"
+                                                    aria-expanded="false">
+                                            </button>
+                                            <div class="dropdown-menu pt-2 pr-2" style="min-width:1px;padding: 0px;"
+                                                 aria-labelledby="dropdownMenuButton">
+                                                {% for utilisateur in extrait.utilisateurs_surplus %}
+                                                    <a class="dropdown-item" style="position:relative;"
+                                                       href="{% url 'index' %}">
+                                                        <img class="mt-1"
+                                                             style="width: 30px;height:32px;border-radius: 25px;"
+                                                             src="{{ utilisateur.utilisateurImg }}"><img
+                                                            class="mt-1"
+                                                            style="width: 32px;height: 32px;border-radius: 25px;position: absolute;top: -12px;right: 4px;"
+                                                            src="{{ utilisateur.reaction }}"></a>
+
+                                                {% endfor %}
+                                            </div>
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+
                     {% endif %}
                 {% endif %}
-
+            </div>
             {% endfor %}
-
         {% endif %}
-
         </div>
         <script type="text/javascript" src="{% static 'favoris_reaction.js' %}"></script>
-{#        <script type="text/javascript" src="{% static 'reactions.js' %}"></script>#}
-
     {% endblock %}

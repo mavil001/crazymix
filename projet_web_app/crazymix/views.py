@@ -31,7 +31,7 @@ def index(request):
     user = getUser(request)
     print(extraits_public)
     extraits_liste = []
-
+    reactionActiveBD=[]
     for x in extraits_public:
 
         audio_proxy = x.audio
@@ -48,24 +48,64 @@ def index(request):
             favorisBD = Favoris.objects.filter(audio=x, utilisateur=user.id)
             if (favorisBD):
                 favori = 'True'
-            reactionActive = Reaction.objects.filter(audio=x, utilisateur=user.id)
-            if(reactionActive):
-                reactionActive=reactionActive[0].reaction
+            reactionActiveBD = Reaction.objects.filter(audio=x, utilisateur=user.id)
+            if (reactionActiveBD):
+                reactionActive = reactionActiveBD[0].reaction
             else:
-                reactionActive=None
+                reactionActive = None
         reactions_liste = []
-        reactionsBD = Reaction.objects.filter(audio=x)
-        if (reactionsBD):
-            for reaction in reactionsBD:
-                reaction_name = reaction.reaction.lower()
-                reactionSrc="/static/crazymix/img/{}.png".format(reaction_name)
-                reactions_liste.append({'src': reactionSrc, 'utilisateurImg': ''})
+        reaction_cool = []
+        reaction_frowning = []
+        reaction_love = []
+        reaction_winky = []
+        reaction_blushing = []
+        reaction_cool = getReactionList(x, 'COOL')
+        reaction_frowning=getReactionList(x, 'FROWNING')
+        reaction_love=getReactionList(x, 'LOVE')
+        reaction_winky=getReactionList(x, 'WINKY')
+        reaction_blushing=getReactionList(x, 'BLUSHING')
+        reactionsBD = []
+        reactionsSurplus=[]
+        utilisateurs_liste=[]
+        if(len(reaction_cool)!=0):
+            reactionsBD.append(reaction_cool)
+        if (len(reaction_frowning) != 0):
+            reactionsBD.append(reaction_frowning)
+        if (len(reaction_love) != 0):
+            reactionsBD.append(reaction_love)
+        if (len(reaction_winky) != 0):
+            reactionsBD.append(reaction_winky)
+        if (len(reaction_blushing) != 0):
+            reactionsBD.append(reaction_blushing)
+        utilisateurs_surplus=[]
+        if (len(reactionsBD)!=0):
+            for reactionType in reactionsBD:
+                reactionSrc=""
+                counter=0
+                for reaction in reactionType:
+                    if(len(reactionActiveBD) ==0 or len(reactionActiveBD) !=0 and reaction.id != reactionActiveBD[0].id):
+                            reaction_name = reaction.reaction.lower()
+                            reactionSrc = "/static/crazymix/img/{}.png".format(reaction_name)
+                            image_proxy = reaction.utilisateur.avatar
+                            image_bytes = image_proxy.read()
+                            image_data = base64.b64encode(image_bytes).decode('utf-8')
+                            image_src = f"data:image/jpeg;base64,{image_data}"
+                            if(counter<=4):
+                                utilisateurs_liste.append({'utilisateurImg': image_src})
+                                counter+=1
+                            else:
+                                utilisateurs_surplus.append({'utilisateurImg':image_src, 'reaction':reactionSrc})
 
+                if(len(utilisateurs_liste)!=0):
+                    reactions_liste.append({'src': reactionSrc, 'utilisateurs_liste': utilisateurs_liste})
+                    utilisateurs_liste = []
+        if(utilisateurs_surplus==[]):
+            utilisateurs_surplus=""
         extraits_liste.append({'audio': audio_src, 'id': x.id, 'partage': x.partage, 'nom': x.nom,
-                               'favoris': favori, 'reactions':reactions_liste, 'reactionActive':reactionActive})
+                               'favoris': favori, 'reactions': reactions_liste, 'reactionActive': reactionActive, 'utilisateurs_surplus':utilisateurs_surplus})
 
     return render(request, 'crazymix/index.html', {'title': 'Extraits disponibles',
-                                               'extraits_public': extraits_liste})
+                                                   'extraits_public': extraits_liste})
 
 
 # return render(request, 'crazymix/index.html', {'title': 'CrazyMix - Studio'})
@@ -418,7 +458,7 @@ def modifierFavoris(request):
 
 
 def modifierReaction(request):
-    valid='invalid'
+    valid = 'invalid'
     if request.headers.get('x-requested-with') == 'XMLHttpRequest':
         data = json.loads(request.body)
         extrait_id = data['extrait_id']
@@ -427,18 +467,18 @@ def modifierReaction(request):
         if extrait:
             user = getUser(request)
             if user:
-                valid='valid'
+                valid = 'valid'
                 reactionBD = Reaction.objects.filter(utilisateur=user.id, audio=extrait)
                 if (not reactionBD):
                     ReactionCree = Reaction(utilisateur=user.id, audio=extrait, reaction=reaction)
                     ReactionCree.save()
                 else:
-                    laReaction=Reaction.objects.get(id=reactionBD[0].id)
+                    laReaction = Reaction.objects.get(id=reactionBD[0].id)
                     if (laReaction.reaction != reaction):
                         laReaction.reaction = reaction
                         laReaction.save()
                     else:
-                        valid='invalid'
+                        valid = 'invalid'
                         laReaction.delete()
         return JsonResponse({'valid': valid, 'reaction': reaction, 'extrait_id': extrait_id})
     return JsonResponse({'valid': valid})
@@ -644,6 +684,12 @@ def getUser(request):
         utilisateur_id = request.session['utilisateur_id']
         utilisateur = Utilisateur.objects.get(id=utilisateur_id)
     return utilisateur
+
+
+def getReactionList(audio, reaction):
+    reactionsBD = Reaction.objects.filter(audio=audio, reaction=reaction)
+
+    return reactionsBD
 
 
 def validateReservation(dateTimeDebut, dateTimeFin):
