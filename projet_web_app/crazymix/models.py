@@ -1,3 +1,5 @@
+import datetime
+
 import mongoengine
 from django.core.validators import RegexValidator
 from mongoengine import *
@@ -74,6 +76,7 @@ class ExtraitAudio(Document):
     audio = fields.FileField()
     partage =StringField(choices=NIVEAU_PARTAGE, required=True, validation=_not_empty, default=NIVEAU_PARTAGE[0])
     nom=StringField()
+    created_at = DateTimeField(default=datetime.datetime.now)
     # def save(self, *args, **kwargs):
     #     super(ExtraitAudio, self).save(*args, **kwargs)
     #

@@ -29,5 +29,6 @@ urlpatterns = [
     path("annulerReservation/<reservation_id>",views.annulerReservation,name="annulerReservation"),
     path("validerReservation/<reservation_id>",views.validerReservation,name="validerReservation"),
     path("supprimerExtrait/<id>", views.supprimerExtrait, name="supprimerExtrait"),
-    path("validersessions/", views.validersessions, name="validersessions")
+    path("validersessions/", views.validersessions, name="validersessions"),
+    path("filtrerExtraits/",views.filtrerExtraits,name="filtrerExtraits")
 ]

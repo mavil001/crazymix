@@ -54,6 +54,22 @@
         {% endif %}
             <li class="nav-item">
             </li>
+             <li class="nav-item active ml-2">
+                <li class="nav-item active">
+                <div class="dropdown">
+                    <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton"
+                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        Filtrer extraits
+                    </button>
+                    <div class="dropdown-menu " aria-labelledby="dropdownMenuButton">
+                             <a class="dropdown-item" href="{% url 'filtrerExtraits' %}?created_within=60">Moins d'une heure</a>
+                            <a class="dropdown-item" href="{% url 'filtrerExtraits' %}?created_within=1440">Moins d'une journée</a>
+                            <a class="dropdown-item" href="{% url 'filtrerExtraits' %}?created_within=10080">Moins d'une semaine</a>
+                             <a class="dropdown-item" href="{% url 'filtrerExtraits' %}?created_within=43200">Moins d'un mois</a>
+
+                    </div>
+                </div>
+            </li>
             <li class="nav-item active ml-2">
                 <li class="nav-item active">
                 <div class="dropdown">
@@ -74,6 +90,8 @@
 
                     </div>
                 </div>
+            </li>
+
             <li>
                 <a class="nav-link" href="{% url 'infos' %}"><img class="rounded-pill ml-3" src="{% static 'crazymix/img/help.jpg' %}" style="Width:35px;"/></a>
             </li>

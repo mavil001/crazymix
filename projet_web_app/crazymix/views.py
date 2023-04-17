@@ -10,7 +10,7 @@ import datetime
 import base64
 import calendar
 from datetime import date
-from datetime import datetime
+from datetime import datetime,timedelta
 from django.core.files.storage import FileSystemStorage
 from pydub import AudioSegment
 from django_mongoengine.mongo_auth.managers import UserManager
@@ -801,3 +801,52 @@ def supprimerExtrait(request, id):
 
     extraits_artistes.delete()
     return redirect('extraits_artistes')
+
+
+
+def filtrerExtraits(request):
+
+    user = getUser(request)
+
+    extraits = []
+    created_within=int(request.GET.get('created_within',0))
+    now=datetime.now()
+    start_date= datetime.now() - timedelta(minutes=created_within)
+    extraits_filtres=list(ExtraitAudio.objects.filter(created_at__gte=start_date))
+    if extraits_filtres:
+         for x in extraits_filtres:
+
+             audio_proxy = x.audio
+             if audio_proxy:
+                 audio_bytes = audio_proxy.read()
+                 audio_data = base64.b64encode(audio_bytes).decode('utf-8')
+                 audio_src = f"data:audio/mpeg;base64,{audio_data}"
+             else:
+                 audio_src = None
+
+             reactionActive = None
+             favori = 'False'
+             if (user):
+                 favorisBD = Favoris.objects.filter(audio=x, utilisateur=user.id)
+                 if (favorisBD):
+                     favori = 'True'
+                 reactionActive = Reaction.objects.filter(audio=x, utilisateur=user.id)
+                 if (reactionActive):
+                     reactionActive = reactionActive[0].reaction
+                 else:
+                     reactionActive = None
+             reactions_liste = []
+             reactionsBD = Reaction.objects.filter(audio=x)
+             if (reactionsBD):
+                 for reaction in reactionsBD:
+                     reaction_name = reaction.reaction.lower()
+                     reactionSrc = "/static/crazymix/img/{}.png".format(reaction_name)
+                     reactions_liste.append({'src': reactionSrc, 'utilisateurImg': ''})
+
+             extraits.append({'audio': audio_src, 'id': x.id, 'partage': x.partage, 'nom': x.nom,
+                                    'favoris': favori, 'reactions': reactions_liste, 'reactionActive': reactionActive})
+
+         return render(request, 'crazymix/index.html', {'title': 'Extraits disponibles',
+                                                        'extraits_public': extraits})
+    else:
+         return render(request, 'crazymix/index.html', {'extraits_public':extraits})
