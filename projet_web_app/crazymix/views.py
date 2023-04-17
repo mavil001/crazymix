@@ -41,7 +41,12 @@ def index(request):
             audio_src = f"data:audio/mpeg;base64,{audio_data}"
         else:
             audio_src = None
+        proxy = x.utilisateur.avatar
+        bytes = proxy.read()
+        data = base64.b64encode(bytes).decode('utf-8')
+        avatar = f"data:image/jpeg;base64,{data}"
 
+        date=x.created
         reactionActive = None
         favori = 'False'
         if (user):
@@ -53,6 +58,7 @@ def index(request):
                 reactionActive = reactionActiveBD[0].reaction
             else:
                 reactionActive = None
+
         reactions_liste = []
         reaction_cool = []
         reaction_frowning = []
@@ -101,7 +107,7 @@ def index(request):
                     utilisateurs_liste = []
         if(utilisateurs_surplus==[]):
             utilisateurs_surplus=""
-        extraits_liste.append({'audio': audio_src, 'id': x.id, 'partage': x.partage, 'nom': x.nom,
+        extraits_liste.append({'audio': audio_src, 'artiste':x.utilisateur.username,'avatar' :avatar,'id': x.id, 'partage': x.partage, 'nom': x.nom,
                                'favoris': favori, 'reactions': reactions_liste, 'reactionActive': reactionActive, 'utilisateurs_surplus':utilisateurs_surplus})
 
     return render(request, 'crazymix/index.html', {'title': 'Extraits disponibles',

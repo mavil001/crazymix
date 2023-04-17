@@ -18,11 +18,11 @@
 
                 {% if extrait.partage == 'PUBLIC' %}
                     <div class="d-flex">
-                        <div class="row">
+                        <div class="row" style="border-bottom: 2.5px solid;border-color: #f1f3f4;">
                             <div class="col-md-4-3">
                                 <div class="card-body">
                                     <div class="d-flex justify-content-between">
-                                        <h4 class="ml-3 mt-4">{{ extrait.nom }}</h4>
+                                        <h3 class="ml-3 mt-4">{{ extrait.nom }}</h3>
                                         <div class="mt-4 mr-3">
                                             {% if 'is_authenticated' in request.session %}
                                                 <a onclick="modifierFavoris(event)" href="#"><img id="{{ extrait.id }}"
@@ -35,16 +35,21 @@
                                             {% endif %}
                                         </div>
                                     </div>
+                                    <div class="d-flex mt-1">
+                                        <img class="ml-3" style="Width:32px;height:32px;border-radius: 22px;"
+                                             src="{{ extrait.avatar }}">
+                                        <h5 class="ml-1 mt-1">{{ extrait.artiste }}</h5>
 
-                                    <audio controls>
+                                    </div>
+                                    <audio class="mt-4" controls>
                                         <source src="{{ extrait.audio }}" type="audio/mpeg">
                                     </audio>
                                     {% if 'is_authenticated' not in request.session %}
-                                        <div class="ml-2 mr-2  rounded-pill d-flex justify-content-around align-items-center"
+                                        <div class="ml-2 mr-2 mt-3 rounded-pill d-flex justify-content-around align-items-center"
                                              style="height:55px;">
                                         </div>
                                     {% else %}
-                                        <div class="ml-2 mr-2 bg-dark rounded-pill d-flex justify-content-around align-items-center"
+                                        <div class="ml-2 mr-2 mt-3 bg-dark rounded-pill d-flex justify-content-around align-items-center"
                                              style="height:55px;">
 
                                         <a onclick="modifierReaction(event)" href="#"><img
@@ -123,59 +128,66 @@
 
                                     <div class="mt-4 d-flex flex-column  rounded-pill">
                                         {% for reaction in extrait.reactions %}
-                                            <div class="d-flex inline mb-3">
+                                            <div class="d-flex inline mb-2">
                                                 <div style="/* width: 40px; */position:relative;/* margin-right: 11px; */padding-right: 30px;padding-left: 10px;">
                                                     {% for utilisateur in reaction.utilisateurs_liste %}
                                                         {#                                <img style="width: 30px;border-radius: 25px;" src="{{ reaction.src }}">#}
                                                         {#                                <img style="width: 32px;height: 32px;border-radius: 25px;position: absolute;top: 5px;right: -24px;"#}
                                                         {#                                     src="{{ reaction.utilisateurImg }}">#}
-                                                        <img style="width: 35px;height:35px;border-radius: 25px;"
+                                                        <img style="width: 32px;height:32px;border-radius: 25px;"
                                                              src="{{ utilisateur.utilisateurImg }}">
 
                                                     {% endfor %}
-                                                    <img style="width: 32px;height: 32px;border-radius: 25px;position: absolute;top: -12px;right: 4px;"
+                                                    <img style="width: 28px;height: 28px;border-radius: 25px;position: absolute;top: -8px;right: 8px;"
                                                          src="{{ reaction.src }}">
                                                 </div>
 
 
                                             </div>
                                         {% endfor %}
-                                        {% if extrait.utilisateurs_surplus != "" %}
-                                            <div class="ml-2 dropdown">
-                                                <button class="btn btn-secondary dropdown-toggle pr-3" type="button"
-                                                        id="dropdownMenuButton"
-                                                        data-toggle="dropdown" aria-haspopup="true"
-                                                        aria-expanded="false">
-                                                </button>
-                                                <div class="dropdown-menu pt-2 pr-2" style="min-width:1px;padding: 0px;"
-                                                     aria-labelledby="dropdownMenuButton">
-                                                    {% for utilisateur in extrait.utilisateurs_surplus %}
-                                                        <a class="dropdown-item" style="position:relative;"
-                                                           href="{% url 'index' %}">
-                                                            <img class="mt-1"
-                                                                 style="width: 30px;height:32px;border-radius: 25px;"
-                                                                 src="{{ utilisateur.utilisateurImg }}"><img
-                                                                class="mt-1"
-                                                                style="width: 32px;height: 32px;border-radius: 25px;position: absolute;top: -12px;right: 4px;"
-                                                                src="{{ utilisateur.reaction }}"></a>
-
-                                                    {% endfor %}
-                                                </div>
-                                            </div>
-                                        {% endif %}
                                     </div>
+                                    {#                                </div>#}
+                                    {#                            </div>#}
+                                    {% if extrait.utilisateurs_surplus != "" %}
+                                        <div class="ml-2 dropdown">
+                                            <button style="width: 53px;height: 34px;background-color: #6c757d;"
+                                                    class="btn btn-secondary dropdown-toggle pr-3" type="button"
+                                                    id="dropdownMenuButton"
+                                                    data-toggle="dropdown" aria-haspopup="true"
+                                                    aria-expanded="false">
+                                            </button>
+                                            <div class="dropdown-menu pt-2 pr-2" style="min-width:1px;padding: 0px;"
+                                                 aria-labelledby="dropdownMenuButton">
+                                                {% for utilisateur in extrait.utilisateurs_surplus %}
+                                                    <a class="dropdown-item" style="position:relative;"
+                                                       href="{% url 'index' %}">
+                                                        <img class="mt-1"
+                                                             style="width: 30px;height:32px;border-radius: 25px;"
+                                                             src="{{ utilisateur.utilisateurImg }}"><img
+                                                            class="mt-1"
+                                                            style="width: 28px;height: 28px;border-radius: 25px;position: absolute;top: -8px;right: 8px;"
+                                                            src="{{ utilisateur.reaction }}"></a>
+
+                                                {% endfor %}
+                                            </div>
+                                        </div>
+                                    {% endif %}
+                                    {#                                </div>#}
+                                    {#                                </div>#}
+                                    {#                            </div>#}
                                 </div>
                             </div>
                         </div>
                     </div>
                 {% else %}
                     {% if 'is_authenticated' in request.session and extrait.partage == 'COMMUNAUTE' %}
-                        <div class="row">
+                        <div class="row" style="border-bottom: 2.5px solid;border-color: #f1f3f4;">
+
                             <div class="col-md-4-3">
                                 <div class="card-body">
                                     <div class="d-flex">
-                                        <h4 class="ml-3 mt-3">{{ extrait.nom }}</h4>
-                                        <div class="ml-2 mt-3">
+                                        <h3 class="ml-3 mt-4">{{ extrait.nom }}</h3>
+                                        <div class="ml-2 mt-4">
                                             {% if 'is_authenticated' in request.session %}
                                                 <a onclick="modifierFavoris(event)" href="#"><img
                                                         id="{{ extrait.id }}"
@@ -188,11 +200,17 @@
                                             {% endif %}
                                         </div>
                                     </div>
-                                    <audio controls>
+                                    <div class="d-flex mt-1">
+                                        <img class="ml-3" style="Width:32px;height:32px;border-radius: 22px;"
+                                             src="{{ extrait.avatar }}">
+                                        <h5 class="ml-1 mt-1">{{ extrait.artiste }}</h5>
+
+                                    </div>
+                                    <audio class="mt-4" controls>
                                         <source src="{{ extrait.audio }}" type="audio/mpeg">
                                     </audio>
                                     {% if 'is_authenticated' in request.session %}
-                                        <div class="ml-2 mr-2 bg-dark rounded-pill d-flex justify-content-around align-items-center"
+                                        <div class="ml-2 mr-2 mt-3 bg-dark rounded-pill d-flex justify-content-around align-items-center"
                                              style="height:55px;">
                                             <a onclick="modifierReaction(event)" href="#"><img
                                                     id="frowning/{{ extrait.id }}"
@@ -255,71 +273,72 @@
                                                     {#                                            {% else %}#}
                                                     {#                                                style="Width:32px;border-radius: 22px;"/></a>#}
                                                     {#                                            {% endif %}#}
-
                                             />
                                         </div>
                                     {% endif %}
-
                                 </div>
-
                             </div>
-                        </div>
-                        <div class="row">
-                        <div class="col-md-4-3">
-                            <div class="card-body">
-                                {#                            <div class="d-flex">#}
-                                {#                                <h6 class="mt-5"></h6>#}
-                                {#                            </div>#}
+                            {#                        </div>#}
+                            <div class="row pt-5">
+                                <div class="col-md-4-3">
+                                    <div class="card-body">
+                                        {#                            <div class="d-flex">#}
+                                        {#                                <h6 class="mt-5"></h6>#}
+                                        {#                            </div>#}
 
-                                <div class="mt-4 d-flex flex-column  rounded-pill">
-                                    {% for reaction in extrait.reactions %}
-                                        <div class="d-flex inline mb-3">
-                                            <div style="/* width: 40px; */position:relative;/* margin-right: 11px; */padding-right: 30px;padding-left: 10px;">
-                                                {% for utilisateur in reaction.utilisateurs_liste %}
-                                                    {#                                <img style="width: 30px;border-radius: 25px;" src="{{ reaction.src }}">#}
-                                                    {#                                <img style="width: 32px;height: 32px;border-radius: 25px;position: absolute;top: 5px;right: -24px;"#}
-                                                    {#                                     src="{{ reaction.utilisateurImg }}">#}
-                                                    <img style="width: 35px;height:35px;border-radius: 25px;"
-                                                         src="{{ utilisateur.utilisateurImg }}">
+                                        <div class="mt-4 d-flex flex-column  rounded-pill">
+                                            {% for reaction in extrait.reactions %}
+                                                <div class="d-flex inline mb-2">
+                                                    <div style="/* width: 40px; */position:relative;/* margin-right: 11px; */padding-right: 30px;padding-left: 10px;">
+                                                        {% for utilisateur in reaction.utilisateurs_liste %}
+                                                            {#                                <img style="width: 30px;border-radius: 25px;" src="{{ reaction.src }}">#}
+                                                            {#                                <img style="width: 32px;height: 32px;border-radius: 25px;position: absolute;top: 5px;right: -24px;"#}
+                                                            {#                                     src="{{ reaction.utilisateurImg }}">#}
+                                                            <img style="width: 30px;height:30px;border-radius: 25px;"
+                                                                 src="{{ utilisateur.utilisateurImg }}">
 
-                                                {% endfor %}
-                                                <img style="width: 32px;height: 32px;border-radius: 25px;position: absolute;top: -12px;right: 4px;"
-                                                     src="{{ reaction.src }}">
-                                            </div>
+                                                        {% endfor %}
+                                                        <img style="width: 28px;height: 28px;border-radius: 25px;position: absolute;top: -8px;right: 8px;"
+                                                             src="{{ reaction.src }}">
+                                                    </div>
 
 
+                                                </div>
+                                            {% endfor %}
+                                            {% if extrait.utilisateurs_surplus != "" %}
+                                                <div class="ml-2 dropdown">
+                                                    <button style="width: 53px;height: 34px;background-color: #6c757d;"
+                                                            class="btn btn-secondary dropdown-toggle pr-3" type="button"
+                                                            id="dropdownMenuButton"
+                                                            data-toggle="dropdown" aria-haspopup="true"
+                                                            aria-expanded="false">
+                                                    </button>
+                                                    <div class="dropdown-menu pt-2 pr-2"
+                                                         style="min-width:1px;padding: 0px;"
+                                                         aria-labelledby="dropdownMenuButton">
+                                                        {% for utilisateur in extrait.utilisateurs_surplus %}
+                                                            <a class="dropdown-item" style="position:relative;"
+                                                               href="{% url 'index' %}">
+                                                                <img class="mt-1"
+                                                                     style="width: 30px;height:30px;border-radius: 25px;"
+                                                                     src="{{ utilisateur.utilisateurImg }}"><img
+                                                                    class="mt-1"
+                                                                    style="width: 28px;height: 28px;border-radius: 25px;position: absolute;top: -8px;right: 8px;"
+                                                                    src="{{ utilisateur.reaction }}"></a>
+
+                                                        {% endfor %}
+                                                    </div>
+                                                </div>
+                                            {% endif %}
                                         </div>
-                                    {% endfor %}
-                                    {% if extrait.utilisateurs_surplus != "" %}
-                                        <div class="ml-2 dropdown">
-                                            <button class="btn btn-secondary dropdown-toggle pr-3" type="button"
-                                                    id="dropdownMenuButton"
-                                                    data-toggle="dropdown" aria-haspopup="true"
-                                                    aria-expanded="false">
-                                            </button>
-                                            <div class="dropdown-menu pt-2 pr-2" style="min-width:1px;padding: 0px;"
-                                                 aria-labelledby="dropdownMenuButton">
-                                                {% for utilisateur in extrait.utilisateurs_surplus %}
-                                                    <a class="dropdown-item" style="position:relative;"
-                                                       href="{% url 'index' %}">
-                                                        <img class="mt-1"
-                                                             style="width: 30px;height:32px;border-radius: 25px;"
-                                                             src="{{ utilisateur.utilisateurImg }}"><img
-                                                            class="mt-1"
-                                                            style="width: 32px;height: 32px;border-radius: 25px;position: absolute;top: -12px;right: 4px;"
-                                                            src="{{ utilisateur.reaction }}"></a>
-
-                                                {% endfor %}
-                                            </div>
-                                        </div>
-                                    {% endif %}
+                                    </div>
                                 </div>
                             </div>
                         </div>
 
                     {% endif %}
                 {% endif %}
-            </div>
+                </div>
             {% endfor %}
         {% endif %}
         </div>
