@@ -14,6 +14,11 @@ STATUT=(('EN_ATTENTE', 'En attente'),
 NIVEAU_PARTAGE=(('PUBLIC', 'Public'),
                 ('COMMUNAUTE', 'Communauté'),
                 ('PERSONNEL', 'Personnel'))
+REACTION=(('FROWNING', 'Frowning'),
+          ('BLUSHING', 'Blushing'),
+          ('WINKY', 'Winky'),
+          ('LOVE', 'Love'),
+          ('COOL', 'Cool'))
 
 def _not_empty(val):
     if not val:
@@ -84,3 +89,13 @@ class ExtraitAudio(Document):
     #         with open(extrait_path, 'rb') as f:
     #             self.audio.put(f, content_type='audio/mp3')
     #             self.save()
+
+class Favoris(Document):
+    utilisateur = ReferenceField(Utilisateur, reverse_delete_rule=mongoengine.CASCADE, required=True)
+    audio = ReferenceField(ExtraitAudio, reverse_delete_rule=mongoengine.CASCADE, required=True)
+
+class Reaction(Document):
+    utilisateur = ReferenceField(Utilisateur, reverse_delete_rule=mongoengine.CASCADE, required=True)
+    audio = ReferenceField(ExtraitAudio, reverse_delete_rule=mongoengine.CASCADE, required=True)
+    reaction = StringField(choices=REACTION, required=True, validation=_not_empty)
+

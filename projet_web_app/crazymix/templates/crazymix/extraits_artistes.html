@@ -12,29 +12,32 @@
         <div style="width:-webkit-fill-available">
             {% for x in extraits %}
                 <div class="row">
-                  <h4 class="col-12">{{ x.nom }}</h4>
+                    <h4 class="col-12">{{ x.nom }}</h4>
                     <div>
                         {% if x.partage == 'PUBLIC' %}
-                            <a class="col-1 mt-2" href="{% url 'modifierPartage' x.id %}"><img class="rounded-pill"
-                                                                src="{% static 'crazymix/img/public.png' %}"
-                                                                style="Width:30px;"/></a>
+                            <a class="col-1 mt-2" onclick="modifierPartage(event)"
+                               href="#"
+                            ><img id="{{ x.id }}" class="rounded-pill"
+                                  src="{% static 'crazymix/img/public.png' %}"
+                                  style="Width:30px;"/></a>
                             <p class="text-center">Public</p>
 
                         {% elif x.partage == 'PERSONNEL' %}
-                            <a class="col-1 mt-2" href="{% url 'modifierPartage' x.id %}"><img class="rounded-pill"
-                                                                src="{% static 'crazymix/img/private.png' %}"
-                                                                style="Width:30px;"/></a>
+                            <a class="col-1 mt-2" onclick="modifierPartage(event)"
+                               href="#"
+                            ><img id="{{ x.id }}" class="rounded-pill"
+                                  src="{% static 'crazymix/img/private.png' %}"
+                                  style="Width:30px;"/></a>
                             <p class="text-center">Privé</p>
                         {% elif x.partage == 'COMMUNAUTE' %}
-                            <a class="col-1 mt-2" href="{% url 'modifierPartage' x.id %}"><img class="rounded-pill"
-                                                                src="{% static 'crazymix/img/community.png' %}"
-                                                                style="Width:30px;"/></a>
+                            <a class="col-1 mt-2" onclick="modifierPartage(event)"
+                               href="#"
+                            ><img id="{{ x.id }}" class="rounded-pill"
+                                  src="{% static 'crazymix/img/community.png' %}"
+                                  style="Width:30px;"/></a>
                             <p class="text-center">Artistes</p>
                         {% endif %}
-
-
                     </div>
-
                     <audio class="col-9" controls>
                         <source src=" {{ x.audio }}">
 
@@ -47,6 +50,7 @@
                 <div class="mt-5"></div>
             {% endfor %}
         </div>
+
         <div>
             <div class="card pb-5 pr-4 pl-3 pt-3">
                 <h4 class="mb-3">Télécharger un nouvel extrait</h4>
@@ -57,25 +61,28 @@
                         <input type="file" name="uploadAudio" id="uploadAudio" accept="audio/*">
                     </div>
 
-                    <div  class="form-group mb-5">
+                    <div class="form-group mb-5">
                         <div>
-                             <label for="nom">Titre de l'extrait</label>
-                        <input type="text" name="nom">
+                            <label for="nom">Titre de l'extrait</label>
+                            <input type="text" name="nom">
                         </div>
 
                         <label class="mb-3">Partage :</label>
                         <div class="form-check">
-                             <input class="form-check-input" type="checkbox" name="partage" id="public" value="PUBLIC" onclick="deselectOtherCheckboxes(this)">
-                             <label class="form-check-label" for="public">Public</label>
+                            <input class="form-check-input" type="checkbox" name="partage" id="public" value="PUBLIC"
+                                   onclick="deselectOtherCheckboxes(this)">
+                            <label class="form-check-label" for="public">Public</label>
                         </div>
                         <div class="form-check">
-                             <input class="form-check-input" type="checkbox" name="partage" id="communaute" value="COMMUNAUTE" onclick="deselectOtherCheckboxes(this)">
-                             <label class="form-check-label" for="communaute">Communauté</label>
+                            <input class="form-check-input" type="checkbox" name="partage" id="communaute"
+                                   value="COMMUNAUTE" onclick="deselectOtherCheckboxes(this)">
+                            <label class="form-check-label" for="communaute">Communauté</label>
                         </div>
 
                         <div class="form-check">
-                             <input class="form-check-input" type="checkbox" name="partage" id="personnel" value="PERSONNEL" onclick="deselectOtherCheckboxes(this)">
-                             <label class="form-check-label" for="personnel">Privé</label>
+                            <input class="form-check-input" type="checkbox" name="partage" id="personnel"
+                                   value="PERSONNEL" onclick="deselectOtherCheckboxes(this)">
+                            <label class="form-check-label" for="personnel">Privé</label>
                         </div>
                     </div>
                     <button type="submit" class="btn btn-primary">Télécharger l'extrait</button>
@@ -83,15 +90,15 @@
             </div>
         </div>
     </div>
-     <script>
-    function deselectOtherCheckboxes(clickedCheckbox) {
-        var checkboxes = document.querySelectorAll('input[type="checkbox"]');
-        checkboxes.forEach(function(checkbox) {
-            if (checkbox !== clickedCheckbox) {
-                checkbox.checked = false;
-            }
-        });
-    }
-</script>
-
+    <script>
+        function deselectOtherCheckboxes(clickedCheckbox) {
+            var checkboxes = document.querySelectorAll('input[type="checkbox"]');
+            checkboxes.forEach(function (checkbox) {
+                if (checkbox !== clickedCheckbox) {
+                    checkbox.checked = false;
+                }
+            });
+        }
+    </script>
+    <script type="text/javascript" src="{% static 'partage.js' %}"></script>
 {% endblock %}
